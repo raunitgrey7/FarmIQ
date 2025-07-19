@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'chatbot.html' %}
+
+<section class="container">
+  <h1 class="heading">🌾 Crop Recommendation</h1>
+
+  <form id="cropForm" class="form">
+    <div class="form-group">
+      <input type="number" name="nitrogen" placeholder="Nitrogen (N)" required />
+      <input type="number" name="phosphorus" placeholder="Phosphorus (P)" required />
+      <input type="number" name="potassium" placeholder="Potassium (K)" required />
+    </div>
+    <div class="form-group">
+      <input type="number" name="temperature" placeholder="Temperature (°C)" required />
+      <input type="number" name="humidity" placeholder="Humidity (%)" required />
+    </div>
+    <div class="form-group">
+      <input type="number" name="ph" placeholder="Soil pH" required />
+      <input type="number" name="rainfall" placeholder="Rainfall (mm)" required />
+    </div>
+    <button type="submit" class="submit-btn">Suggest Crop</button>
+  </form>
+
+  <div id="result" class="result-box" style="display: none;">
+</section>
+
+<!-- Crop Prediction Script -->
+<script>
+document.getElementById('cropForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+  const data = {
+    nitrogen: parseFloat(formData.get('nitrogen')),
+    phosphorus: parseFloat(formData.get('phosphorus')),
+    potassium: parseFloat(formData.get('potassium')),
+    temperature: parseFloat(formData.get('temperature')),
+    humidity: parseFloat(formData.get('humidity')),
+    ph: parseFloat(formData.get('ph')),
+    rainfall: parseFloat(formData.get('rainfall'))
+  };
+
+  try {
+    const response = await fetch('/predict-json', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    const resultData = await response.json();
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = `<h3>🌱 Recommended Crop: <strong>${resultData.crop}</strong></h3>`;
+    resultDiv.style.display = 'block';
+  } catch (error) {
+    console.error('Prediction error:', error);
+    alert('Failed to get prediction. Please try again.');
+  }
+});
+</script>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- 🌱 Crop Estimation Based on Land -->
+<hr class="divider" />
+<section class="container estimation-section">
+  <h2 class="heading">📊 Crop Estimation Based on Land</h2>
+  <p class="info-text">
+    Enter your land size and crop to estimate the approximate cost, harvest time, resources needed, and expected yield.
+  </p>
+
+  <form id="cropFormEstimation" class="form">
+    <div class="form-group">
+      <label for="land">Land Area (in acres)</label>
+      <input type="number" id="land" required />
+    </div>
+    <div class="form-group">
+      <label for="cropSelect">Select Crop</label>
+      <select id="cropSelect" required>
+        <option value="">--Choose Crop--</option>
+        <option value="wheat">Wheat</option>
+        <option value="rice">Rice</option>
+        <option value="bajra">Bajra</option>
+        <option value="maize">Maize</option>
+      </select>
+    </div>
+    <button type="submit" class="submit-btn">Estimate Crop Plan</button>
+  </form>
+
+  <div id="cropEstimationResult" class="result-box" style="display: none;">
+    <h3>Crop Plan Details:</h3>
+    <p><strong>Total Estimated Cost:</strong> ₹<span id="cropCost"></span></p>
+    <p><strong>Time to Harvest:</strong> <span id="cropTime"></span> months</p>
+    <p><strong>Resources Required:</strong> <span id="cropResources"></span></p>
+    <p><strong>About This Crop:</strong> <span id="cropDescription"></span></p>
+    <p><strong>Expected Yield:</strong> <span id="cropYield"></span> tons</p>
+    <p><strong>Fertilizer Needed:</strong> <span id="fertilizerNeeded"></span> bags</p>
+  </div>
+</section>
+
+<script>
+// 🌱 Crop Estimation Script
+document.getElementById('cropFormEstimation').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const land = +document.getElementById('land').value;
+  const crop = document.getElementById('cropSelect').value;
+
+  const cropData = {
+    wheat: {
+      costPerAcre: 8000,
+      time: 4,
+      resources: "50 kg seed, 2 bags urea, moderate water",
+      yieldPerAcre: 2.8,
+      fertilizerPerAcre: 2,
+      description: "Wheat is a rabi crop best grown in cool, dry climates. It requires well-drained loamy soil and is a staple food grain."
+    },
+    rice: {
+      costPerAcre: 10000,
+      time: 5,
+      resources: "High water, 3 bags fertilizer, pesticides",
+      yieldPerAcre: 3.5,
+      fertilizerPerAcre: 3,
+      description: "Rice is a kharif crop that thrives in warm, humid weather. It needs standing water and rich, clayey soil."
+    },
+    bajra: {
+      costPerAcre: 6000,
+      time: 3,
+      resources: "30 kg seed, dry soil, low water",
+      yieldPerAcre: 1.2,
+      fertilizerPerAcre: 1.5,
+      description: "Bajra is a drought-resistant millet suitable for dry areas. It matures quickly and is rich in nutrients."
+    },
+    maize: {
+      costPerAcre: 7500,
+      time: 4,
+      resources: "40 kg seed, moderate water, fertilizer",
+      yieldPerAcre: 2.5,
+      fertilizerPerAcre: 2.5,
+      description: "Maize is a flexible crop for multiple seasons. Grows well in loamy soil and used for food and fodder."
+    }
+  };
+
+  if (cropData[crop]) {
+    const data = cropData[crop];
+    document.getElementById('cropCost').innerText = (land * data.costPerAcre).toFixed(2);
+    document.getElementById('cropTime').innerText = data.time;
+    document.getElementById('cropResources').innerText = data.resources;
+    document.getElementById('cropDescription').innerText = data.description;
+    document.getElementById('cropYield').innerText = (land * data.yieldPerAcre).toFixed(2);
+    document.getElementById('fertilizerNeeded').innerText = (land * data.fertilizerPerAcre).toFixed(1);
+    document.getElementById('cropEstimationResult').style.display = 'block';
+  }
+});
+</script>
+
+{% endblock %}

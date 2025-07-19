@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF‑8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KisaanSaathi</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+  <link rel="icon" type="image/png" href="/static/images/fav.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    if (localStorage.getItem("darkMode") === "enabled") {
+      document.documentElement.classList.add("dark-mode");
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', path='js/script.js') }}"></script>
+
+  <style>
+    :root {
+      --bg-color: #f0fff0;
+      --text-color: #333;
+      --header-bg: #2e7d32;
+      --header-text: #fff;
+      --nav-bg: #388e3c;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    header {
+      background-color: var(--header-bg);
+      color: var(--header-text);
+      padding-bottom: 1rem;
+    }
+
+    .brand-header {
+      text-align: center;
+      padding: 1rem 0 0.5rem;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 0.5rem 2rem;
+      list-style: none;
+      margin: 0;
+    }
+
+    .nav-links li {
+      flex: 0 1 auto;
+    }
+
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      background-color: var(--nav-bg);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.3s;
+      min-width: 100px;
+    }
+
+    .nav-links a:hover {
+      background-color: #2e7d32;
+    }
+
+    .nav-links a.active {
+      background-color: #4caf50;
+      font-weight: 600;
+      text-decoration: none !important;
+    }
+
+    .toggle-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 10px;
+    }
+
+    .icon-btn {
+      cursor: pointer;
+      font-size: 1.2rem;
+      border: none;
+      background: none;
+      color: #fff;
+      padding: 6px;
+      transition: transform 0.2s;
+    }
+
+    .icon-btn:hover {
+      transform: scale(1.1);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .nav-links li {
+        width: 100%;
+      }
+    }
+
+    .dark-mode {
+      --bg-color: #1a1a1a;
+      --text-color: #eaeaea;
+      --header-bg: #333;
+      --header-text: #fff;
+    }
+
+    /* Tabs Styling */
+    .tabs-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 1rem 0;
+      gap: 10px;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      background-color: var(--nav-bg);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .tab-btn:hover {
+      background-color: #2e7d32;
+    }
+
+    .tab-btn.active {
+      background-color: #4caf50;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 1rem;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <a href="/home" class="app-title-btn">🚜 <strong>KisaanSaathi</strong></a>
+  <nav class="navbar">
+    <ul class="nav-links">
+      <li><a href="/home" class="{% if request.url.path.startswith('/home') %}active{% endif %}">🏠 Home</a></li>
+      <li><a href="/crop" class="{% if request.url.path.startswith('/crop') %}active{% endif %}">🌾 Crop</a></li>
+      <li><a href="/soil" class="{% if request.url.path.startswith('/soil') %}active{% endif %}">🧪 Soil</a></li>
+      <li><a href="/disease" class="{% if request.url.path.startswith('/disease') %}active{% endif %}">🌿 Disease</a></li>
+      <li><a href="/weather" class="{% if request.url.path.startswith('/weather') %}active{% endif %}">🌤️ Weather</a></li>
+      <li><a href="/profit" class="{% if request.url.path.startswith('/profit') %}active{% endif %}">💰 Profit</a></li>
+      <li><a href="/problem" class="{% if request.url.path.startswith('/problem') %}active{% endif %}">⚠️ Issues</a></li>
+      <li><a href="/instructions" class="{% if request.url.path.startswith('/instructions') %}active{% endif %}">📖 Instructions</a></li>
+    </ul>
+  </nav>
+
+  <div class="toggle-controls">
+    <button id="language-toggle" title="Switch to Hindi" class="icon-btn">🌐</button>
+    <button id="theme-toggle" title="Toggle Dark Mode" class="icon-btn">🌙</button>
+  </div>
+</header>
+
+<!-- Page Content -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- Footer -->
+<footer>
+  <p>© 2025 KisaanSaathi | Helping Farmers Grow Smarter</p>
+</footer>
+
+<!-- Google Translate -->
+<div id="google_translate_element" style="text-align:center; margin: 10px;"></div>
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<!-- Dark Mode + Language Toggle Script -->
+<script>
+  (function () {
+    const LANG_EN = "en";
+    const LANG_HI = "hi";
+
+    const langToggleBtn = document.getElementById("language-toggle");
+    const themeToggleBtn = document.getElementById("theme-toggle");
+
+    if (localStorage.getItem("darkMode") === "enabled") {
+      document.body.classList.add("dark-mode");
+      document.documentElement.classList.add("dark-mode");
+    }
+
+    themeToggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      document.documentElement.classList.toggle("dark-mode");
+      const enabled = document.body.classList.contains("dark-mode");
+      localStorage.setItem("darkMode", enabled ? "enabled" : "disabled");
+    });
+
+    function waitForTranslate(cb) {
+      const combo = document.querySelector("select.goog-te-combo");
+      if (combo) return cb(combo);
+
+      const observer = new MutationObserver(() => {
+        const newCombo = document.querySelector("select.goog-te-combo");
+        if (newCombo) {
+          observer.disconnect();
+          cb(newCombo);
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      waitForTranslate((combo) => {
+        if (langToggleBtn) {
+          langToggleBtn.addEventListener("click", () => {
+            const currentLang = combo.value;
+            const nextLang = currentLang === LANG_EN ? LANG_HI : LANG_EN;
+            combo.value = nextLang;
+            combo.dispatchEvent(new Event("change"));
+          });
+        }
+      });
+    });
+  })();
+</script>
+
+<!-- Tab Logic -->
+<script>
+  function setupTabs(tabGroupSelector = '.tabs-container') {
+    const tabContainers = document.querySelectorAll(tabGroupSelector);
+    tabContainers.forEach(container => {
+      const buttons = container.querySelectorAll('.tab-btn');
+      const contents = container.parentElement.querySelectorAll('.tab-content');
+
+      buttons.forEach((btn, idx) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => b.classList.remove('active'));
+          contents.forEach(c => c.classList.remove('active'));
+
+          btn.classList.add('active');
+          contents[idx].classList.add('active');
+        });
+      });
+    });
+  }
+  document.addEventListener('DOMContentLoaded', setupTabs);
+</script>
+
+<!-- 🧠 Chatbot Include -->
+{% include 'chatbot.html' %}
+
+</body>
+</html>

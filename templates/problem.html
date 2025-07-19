@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>🚨 Report Crop Issues</h1>
+<p>Select your issue and get instant suggestions!</p>
+
+<form method="POST" action="/detect_problem">
+  <label for="issue">Select a Crop Issue:</label>
+  <select name="issue" id="issue">
+    <option>Yellowing leaves</option>
+    <option>Wilting</option>
+    <option>Spots on leaves</option>
+    <option>Stunted growth</option>
+    <option>Pest infestation</option>
+  </select>
+  <button type="submit">🩺 Get Help</button>
+</form>
+
+{% if tip %}
+  <div class="result-box">
+    <strong>Advice:</strong> {{ tip }}
+  </div>
+{% endif %}
+
+{% endblock %}

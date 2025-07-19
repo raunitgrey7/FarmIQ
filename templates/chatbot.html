@@ -1,0 +1,32 @@
+<!-- chatbot.html -->
+<div id="chatbotIcon" onclick="toggleChatbot()">🤖</div>
+
+<div id="chatbotContainer">
+  <div id="chatHeader">
+    KisaanSaathi Bot
+    <span id="closeChat" onclick="toggleChatbot()">✖</span>
+  </div>
+  <div id="chatMessages"></div>
+  <div id="chatInputContainer">
+  <select id="questionSelect" class="chat-btn" style="flex: 1;">
+    <option disabled selected>Select your question</option>
+    <option value="crop_july_punjab">🌾 What crop should I grow in July in Punjab?</option>
+    <option value="pest_tomato">🪲 How to prevent pests in Tomato?</option>
+    <option value="fertilizer_wheat">🌿 Best fertilizer for wheat?</option>
+    <option value="soil_moisture">💧 How to check soil moisture manually?</option>
+    <option value="soil_ph">🧪 How to improve soil pH?</option>
+    <option value="govt_schemes">💰 Where to find subsidy or govt schemes?</option>
+    <option value="rainfall_today">☔ How to know today's rainfall?</option>
+    <option value="crop_profitable">📈 Which crop gives the most profit?</option>
+    <option value="natural_fertilizer">🍀 What are natural fertilizers I can use?</option>
+    <option value="weather_forecast">🌦️ How to check weekly weather forecast?</option>
+    <option value="disease_identify">🔍 How do I identify plant disease?</option>
+    <option value="save_water">🚿 How can I save water while farming?</option>
+  </select>
+  <button class="chat-btn" onclick="getAnswer()">Ask</button>
+</div>
+</div>
+
+<!-- Load chatbot specific assets -->
+<link rel="stylesheet" href="{{ url_for('static', path='css/chatbot.css') }}">
+<script src="{{ url_for('static', path='js/chatbot.js') }}"></script>

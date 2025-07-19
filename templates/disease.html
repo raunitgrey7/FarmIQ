@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+{% include 'chatbot.html' %}
+
+  <h2>🩺 Plant Disease Detection</h2>
+
+  <form id="diseaseForm" enctype="multipart/form-data">
+    <label>Upload plant image:
+      <input type="file" name="file" accept="image/*" required>
+    </label>
+    <button type="submit">🔍 Detect Disease</button>
+  </form>
+
+  <div id="diseaseResult" style="margin-top: 20px;"></div>
+
+  <script>
+    const form = document.getElementById("diseaseForm");
+    const resultBox = document.getElementById("diseaseResult");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const file = form.querySelector("input[type='file']").files[0];
+      if (!file) return alert("Please upload an image.");
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      resultBox.innerHTML = "<p>⏳ Detecting disease...</p>";
+
+      try {
+        const res = await fetch("/detect_disease", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await res.json();
+        if (result.error) {
+          resultBox.innerHTML = `<p style="color: red;">❌ Error: ${result.error}</p>`;
+        } else {
+          const disease = result.predicted_disease;
+          const { symptoms, solutions, prevention } = result.details;
+
+          resultBox.innerHTML = `
+            <div style="border: 2px solid #4caf50; padding: 1rem; border-radius: 8px; background: #f9fff9;">
+              <h3>🌱 Disease Detected: <span style="color: #2e7d32;">${disease}</span></h3>
+              <p><strong>🩺 Symptoms:</strong> ${symptoms}</p>
+              <p><strong>💊 Solutions:</strong> ${solutions}</p>
+              <p><strong>🛡️ Prevention:</strong> ${prevention}</p>
+            </div>
+          `;
+        }
+
+        form.reset();
+      } catch (err) {
+        console.error("❌ Detection Error:", err);
+        resultBox.innerHTML = `<p style="color: red;">Error occurred while detecting disease.</p>`;
+      }
+    });
+  </script>
+{% endblock %}

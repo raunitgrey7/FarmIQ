@@ -1,0 +1,13 @@
+# Prevent large or unnecessary files from being tracked
+__pycache__/
+*.pt
+*.pkl
+*.log
+*.sqlite3
+*.h5
+*.ckpt
+*.onnx
+
+# Avoid virtual environments
+venv/
+env/

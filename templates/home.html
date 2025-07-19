@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<body onload="showWelcomeScreen()">
+
+<!-- Welcome Screen -->
+<div id="welcome-screen" class="welcome-screen">
+  <div class="welcome-content">
+    <h1 class="welcome-title">🌾 Welcome to <span style="color:#4CAF50">KisaanSaathi</span></h1>
+    <p class="welcome-sub">Your smart agricultural assistant</p>
+    <button onclick="hideWelcomeScreen()">Let's Go 🚀</button>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div id="main-content" style="display: none;">
+    <!-- Your existing home page layout/buttons go here -->
+</div>
+
+<!-- 🌟 Hero Section -->
+<section class="bg-green-700 text-white py-16 px-6 text-center rounded-2xl shadow-xl transition-all">
+  <h1 class="text-5xl font-extrabold mb-4">Welcome to KisaanSaathi 🌾</h1>
+  <p class="text-lg mb-8 max-w-2xl mx-auto">
+    Your one-stop digital platform for smart farming — get crop suggestions, estimate profits, detect diseases, and more!
+  </p><br>
+  
+</section>
+
+<!-- 💡 Feature Section -->
+<section class="py-16 px-6 bg-gray-50 dark:bg-[#1f1f1f] transition">
+  <div class="feature-container">
+    <h2 class="feature-heading">🔍 Explore Our Features</h2>
+
+    <div class="feature-grid">
+
+    <a href="/crop" class="feature-card">
+        <h3>🌱 Crop Prediction</h3>
+        <p>Get the best crop recommendation based on your land's conditions.</p>
+    </a>
+
+    <a href="/soil" class="feature-card">
+        <h3>🌿 Soil Type Detection</h3>
+        <p>Know your soil's composition and ideal crops.</p>
+    </a>
+
+    <a href="/profit" class="feature-card">
+        <h3>📊 Profit Estimation</h3>
+        <p>Enter your cost details and get estimated profit margin.</p>
+    </a>
+
+    <a href="/yield" class="feature-card">
+        <h3>🌾 Crop Yield by Land</h3>
+        <p>Estimate total yield based on crop and land size.</p>
+    </a>
+
+    <a href="/problem" class="feature-card">
+        <h3>🎯 Crop Issue Reporting</h3>
+        <p>Raise problems like pests or poor yield and get suggestions.</p>
+    </a>
+
+    <a href="/instructions" class="feature-card">
+        <h3>📘 Farming Instructions</h3>
+        <p>Best practices for sowing, irrigation, fertilizing, and harvesting.</p>
+    </a>
+
+</div>
+
+</div>
+</section>
+
+<script>
+    function showWelcomeScreen() {
+        document.getElementById("main-content").style.display = "none";
+        document.getElementById("welcome-screen").style.display = "flex";
+    }
+
+    function hideWelcomeScreen() {
+        document.getElementById("welcome-screen").style.display = "none";
+        document.getElementById("main-content").style.display = "block";
+    }
+</script>
+
+<br>
+
+
+{% endblock %}

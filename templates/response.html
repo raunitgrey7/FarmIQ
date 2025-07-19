@@ -1,0 +1,12 @@
+<h2>🌱 Crop Care Guide for {{ crop.title() }}</h2>
+{% if tips %}
+    <ul>
+        <li><strong>Sowing Season:</strong> {{ tips.sowing_season }}</li>
+        <li><strong>Watering:</strong> {{ tips.watering }}</li>
+        <li><strong>Fertilizer:</strong> {{ tips.fertilizer }}</li>
+        <li><strong>Organic Pest Control:</strong> {{ tips.pest_control }}</li>
+        <li><strong>Harvest Time:</strong> {{ tips.harvest }}</li>
+    </ul>
+{% else %}
+    <p>No tips available for this crop yet.</p>
+{% endif %}

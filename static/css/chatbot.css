@@ -1,0 +1,129 @@
+#chatbotIcon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 2rem;
+  background-color: #1abc9c;
+  color: white;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+#chatbotContainer {
+  display: none;
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 350px;
+  height: 500px;
+  background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  color: white;
+  z-index: 9999;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+#chatHeader {
+  background-color: #1abc9c;
+  padding: 10px;
+  font-size: 18px;
+  text-align: center;
+  position: relative;
+}
+
+#closeChat {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+}
+
+#chatMessages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  max-height: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.user-msg, .bot-msg {
+  padding: 8px 12px;
+  border-radius: 10px;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.user-msg {
+  background-color: #1abc9c;
+  align-self: flex-end;
+}
+
+.bot-msg {
+  background-color: #3498db;
+  align-self: flex-start;
+}
+
+#chatInputContainer {
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+#chatInput {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  background-color: #34495e;
+}
+
+.chat-btn {
+  background-color: #1abc9c;
+  color: white;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.chat-btn:hover {
+  background-color: #16a085;
+}
+
+@media (max-width: 600px) {
+  #chatbotContainer {
+    width: 95vw;
+    height: 80vh;
+  }
+  #chatMessages {
+    max-height: 60vh;
+  }
+}
+
+.user-msg, .bot-msg {
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dark-mode #chatbotContainer {
+  background: linear-gradient(to bottom right, #000, #111, #222);
+}
+.dark-mode .bot-msg {
+  background-color: #444;
+}
+.dark-mode .user-msg {
+  background-color: #1abc9c;
+}
+

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- 💰 Profit Estimation Section -->
+<section>
+    <div class="container">
+    <h2 style="text-align: center; color: #2d6a4f;">💰 Estimate Your Field Profit</h2>
+
+  <form id="profitForm">
+    <div class="input-group">
+      <label for="sowing">🌱 Sowing Cost (₹)</label>
+      <input type="number" id="sowing" name="sowing" required />
+    </div>
+    <div class="input-group">
+      <label for="fertilizer">🧪 Fertilizer Cost (₹)</label>
+      <input type="number" id="fertilizer" name="fertilizer" required />
+    </div>
+    <div class="input-group">
+      <label for="pesticides">🐛 Pesticides Cost (₹)</label>
+      <input type="number" id="pesticides" name="pesticides" required />
+    </div>
+    <div class="input-group">
+      <label for="other">🧾 Other Costs (₹)</label>
+      <input type="number" id="other" name="other" required />
+    </div>
+    <div class="input-group">
+      <label for="selling">💵 Expected Selling Price (₹)</label>
+      <input type="number" id="selling" name="selling" required />
+    </div>
+    <button type="submit">Calculate Profit</button>
+  </form>
+
+  <div id="result" class="result-box">
+    <h3>Estimated Profit:</h3>
+    <p><strong>Total Investment (Cost):</strong> ₹<span id="totalCost"></span></p>
+    <p><strong>Expected Selling Price:</strong> ₹<span id="sellingPrice"></span></p>
+    <p><strong>➡️ Estimated Profit = Selling Price - Total Cost:</strong> <strong class="profit-value">₹<span id="profitValue"></span></strong>
+  </div>
+</div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById('profitForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const sowing = parseFloat(document.getElementById('sowing').value) || 0;
+    const fertilizer = parseFloat(document.getElementById('fertilizer').value) || 0;
+    const pesticides = parseFloat(document.getElementById('pesticides').value) || 0;
+    const other = parseFloat(document.getElementById('other').value) || 0;
+    const selling = parseFloat(document.getElementById('selling').value) || 0;
+
+    const totalCost = sowing + fertilizer + pesticides + other;
+    const profit = selling - totalCost;
+
+    document.getElementById('totalCost').innerText = totalCost.toFixed(2);
+    document.getElementById('sellingPrice').innerText = selling.toFixed(2);
+    document.getElementById('profitValue').innerText = profit.toFixed(2);
+    document.getElementById('result').style.display = 'block';
+  });
+});
+</script>
+
+{% endblock %}

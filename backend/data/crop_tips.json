@@ -1,0 +1,164 @@
+{
+  "rice": {
+    "sowing_season": "June to July",
+    "watering": "Water every 3 days during vegetative stage. Avoid overwatering in maturity phase.",
+    "fertilizer": "Apply urea and potash after 20 days of sowing.",
+    "pest_control": "Use neem oil or cow urine spray to avoid leaf folder and stem borer.",
+    "harvest": "Harvest after 120 days when 80% grains are golden-yellow."
+  },
+  "wheat": {
+    "sowing_season": "November to December",
+    "watering": "First irrigation 21 days after sowing, then every 15–20 days.",
+    "fertilizer": "DAP at sowing, then urea twice during growth.",
+    "pest_control": "Inspect weekly for rust. Use Trichoderma spray if needed.",
+    "harvest": "Harvest after 110–120 days when ears turn golden."
+  },
+  "maize": {
+    "sowing_season": "June to July (Kharif) or October to November (Rabi)",
+    "watering": "Water every 7–10 days depending on soil moisture, especially during flowering and grain filling stages.",
+    "fertilizer": "Apply nitrogen (urea) in three splits — at sowing, knee-high, and pre-tasseling stages.",
+    "pest_control": "Use pheromone traps and neem oil for stem borer and fall armyworm.",
+    "harvest": "Harvest after 100–110 days when husks dry and kernels are hard."
+  },
+  "chickpea": {
+    "sowing_season": "October to November",
+    "watering": "Minimal watering needed; irrigate only during flowering and pod filling if dry.",
+    "fertilizer": "Use DAP at sowing; apply gypsum if soil is sulfur-deficient.",
+    "pest_control": "Use Helicoverpa nuclear polyhedrosis virus (HNPV) and neem spray for pod borer.",
+    "harvest": "Harvest after 100–120 days when leaves turn yellow and pods are mature."
+  },
+  "kidneybeans": {
+    "sowing_season": "June to July or February to March (in cooler regions)",
+    "watering": "Water every 7–10 days; avoid waterlogging.",
+    "fertilizer": "Apply compost and a balanced NPK fertilizer at sowing.",
+    "pest_control": "Use neem oil spray for aphids and bean beetles.",
+    "harvest": "Harvest after 90–100 days when pods are dry and brittle."
+  },
+  "pigeonpeas": {
+    "sowing_season": "June to July",
+    "watering": "Requires minimal irrigation; water during flowering if dry.",
+    "fertilizer": "Apply FYM before sowing and DAP during early growth.",
+    "pest_control": "Use neem-based pesticides for pod borer and pod fly.",
+    "harvest": "Harvest after 150–180 days when pods turn brown and dry."
+  },
+  "mothbeans": {
+    "sowing_season": "June to July",
+    "watering": "Drought-tolerant; water once during flowering if dry.",
+    "fertilizer": "Apply light doses of NPK at sowing.",
+    "pest_control": "Spray neem oil to control pod borers and aphids.",
+    "harvest": "Harvest after 70–80 days when pods are dry."
+  },
+  "mungbean": {
+    "sowing_season": "March to April or June to July",
+    "watering": "Water every 10–12 days; avoid waterlogging.",
+    "fertilizer": "Apply phosphorus-rich fertilizer at sowing.",
+    "pest_control": "Use neem-based sprays for thrips and whiteflies.",
+    "harvest": "Harvest after 60–70 days when 80% of pods turn black."
+  },
+  "blackgram": {
+    "sowing_season": "June to July or September to October",
+    "watering": "Irrigate only during flowering and pod filling if needed.",
+    "fertilizer": "Apply FYM and DAP at sowing.",
+    "pest_control": "Neem oil spray for pod borer and aphids.",
+    "harvest": "Harvest after 80–90 days when pods turn black and crisp."
+  },
+  "lentil": {
+    "sowing_season": "October to November",
+    "watering": "Irrigate during pod development and flowering stages if dry.",
+    "fertilizer": "Apply phosphorus and potash at sowing.",
+    "pest_control": "Use neem or garlic extract to manage aphids and pod borers.",
+    "harvest": "Harvest after 110–120 days when pods are fully mature and dry."
+  },
+  "pomegranate": {
+    "sowing_season": "February to March or July to August",
+    "watering": "Water every 7–10 days during fruiting; reduce in winter.",
+    "fertilizer": "Apply compost and NPK every 3 months.",
+    "pest_control": "Use neem oil and sticky traps to manage fruit borers and aphids.",
+    "harvest": "Harvest 5–7 months after flowering when fruits turn red and sound metallic when tapped."
+  },
+  "banana": {
+    "sowing_season": "March to May or June to August",
+    "watering": "Irrigate every 5–7 days; maintain high soil moisture.",
+    "fertilizer": "Use organic compost monthly and supplement with potassium-rich fertilizer.",
+    "pest_control": "Use neem cake and pseudomonas to control weevils and aphids.",
+    "harvest": "Harvest 11–12 months after planting when the fruit bunch is plump and angles round off."
+  },
+  "mango": {
+    "sowing_season": "June to July or February to March",
+    "watering": "Water young trees weekly; mature trees during flowering and fruiting.",
+    "fertilizer": "Apply compost and NPK annually in early spring.",
+    "pest_control": "Use neem oil and pheromone traps to manage fruit fly and hoppers.",
+    "harvest": "Harvest 90–120 days after flowering when fruit color changes and sweet aroma develops."
+  },
+  "grapes": {
+    "sowing_season": "January to February (cutting plantation)",
+    "watering": "Irrigate every 5–7 days; reduce during ripening.",
+    "fertilizer": "Apply FYM, phosphorus, and potash at pruning.",
+    "pest_control": "Use sulfur spray for powdery mildew and neem oil for mealy bugs.",
+    "harvest": "Harvest after 120–150 days when berries are sweet and fully colored."
+  },
+  "watermelon": {
+    "sowing_season": "January to March or June to July",
+    "watering": "Water every 6–8 days; reduce near harvest for better sweetness.",
+    "fertilizer": "Apply compost and balanced NPK at vining stage.",
+    "pest_control": "Neem oil or garlic spray for aphids and fruit flies.",
+    "harvest": "Harvest after 75–90 days when the tendril near the fruit dries and thumps hollow."
+  },
+  "muskmelon": {
+    "sowing_season": "February to March or June to July",
+    "watering": "Irrigate every 7 days; avoid overwatering during fruit ripening.",
+    "fertilizer": "Use compost and potash-rich fertilizer at flowering stage.",
+    "pest_control": "Neem or chili-garlic spray for fruit flies and leaf beetles.",
+    "harvest": "Harvest after 80–90 days when fruits emit a musky aroma and slip off the vine."
+  },
+  "apple": {
+    "sowing_season": "December to February (in cold climates)",
+    "watering": "Water weekly during dry periods; mulch to retain moisture.",
+    "fertilizer": "Apply compost in winter and NPK before flowering.",
+    "pest_control": "Use pheromone traps and neem oil for codling moth and aphids.",
+    "harvest": "Harvest in 150–180 days after flowering when fruit is firm and full-colored."
+  },
+  "orange": {
+    "sowing_season": "July to August or February to March",
+    "watering": "Irrigate every 7–10 days during summer, less in winter.",
+    "fertilizer": "Apply compost and micronutrients biannually.",
+    "pest_control": "Use neem oil or horticultural soap for aphids and psylla.",
+    "harvest": "Harvest 240–300 days after flowering when fruit turns orange and detaches easily."
+  },
+  "papaya": {
+    "sowing_season": "February to March or June to July",
+    "watering": "Water every 4–5 days; more frequently during fruiting.",
+    "fertilizer": "Apply compost monthly and NPK at 3-month intervals.",
+    "pest_control": "Neem oil and yellow sticky traps for whiteflies and mealybugs.",
+    "harvest": "Harvest after 6–9 months when the fruit starts turning yellow at the base."
+  },
+  "coconut": {
+    "sowing_season": "June to July",
+    "watering": "Water every 7–10 days; maintain high humidity in early stages.",
+    "fertilizer": "Apply organic manure and NPK every 4 months.",
+    "pest_control": "Use neem cake and root-feeding insecticides for rhinoceros beetles and mites.",
+    "harvest": "Harvest every 45–60 days after 6 years of planting when nuts are mature."
+  },
+  "cotton": {
+    "sowing_season": "April to June",
+    "watering": "Irrigate every 10–15 days; critical during flowering and boll formation.",
+    "fertilizer": "Apply nitrogen and potash in split doses.",
+    "pest_control": "Use pheromone traps and neem spray to control bollworms and aphids.",
+    "harvest": "Harvest after 150–180 days when bolls burst and lint is fluffy."
+  },
+"jute": {
+  "sowing_season": "March to May (pre-monsoon period)",
+  "watering": "Requires moderate water; ensure good drainage; irrigate if rainfall is insufficient.",
+  "fertilizer": "Apply nitrogen, phosphorus, and potash; nitrogen in two split doses.",
+  "pest_control": "Use insecticides for stem weevil and fungal sprays for seedling blight; adopt crop rotation.",
+  "harvest": "Harvest after 100–120 days when pods mature and leaves start shedding; retting follows immediately."
+},
+"coffee": {
+  "sowing_season": "June to August (monsoon season); best with shade tree planting",
+  "watering": "Requires 1600–2500 mm rainfall; supplementary irrigation during dry spells, especially blossom and backing showers.",
+  "fertilizer": "Apply nitrogen, phosphorus, and potassium in 3–4 split doses annually; supplement with micronutrients.",
+  "pest_control": "Use Bordeaux mixture for rust; control berry borer and mealybugs with recommended insecticides.",
+  "harvest": "Harvest after 6–8 months from flowering when berries turn red; pick ripe cherries by hand."
+}
+
+}
