@@ -5,6 +5,16 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 import json
 from pathlib import Path
+import gdown
+import os
+
+MODEL_PATH = "backend/disease_model/plant_disease_model.pt"
+
+if not os.path.exists(MODEL_PATH):
+    print("Downloading model...")
+    url = "https://drive.google.com/uc?id=YOUR_FILE_ID"
+    gdown.download(url, MODEL_PATH, quiet=False)
+
 
 
 router = APIRouter()

@@ -1,17 +1,18 @@
 # Prevent large or unnecessary files from being tracked
 __pycache__/
-*.pt
-*.pkl
 *.log
 *.sqlite3
 *.h5
 *.ckpt
 *.onnx
 
+# Ignore all .pt EXCEPT the model(s)
+*.pt
+!backend/disease_model/plant_disease_model.pt
+
 # Avoid virtual environments
 venv/
 env/
-
 
 # VS Code folders
 .vscode/
