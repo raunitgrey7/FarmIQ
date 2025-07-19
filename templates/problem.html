@@ -7,18 +7,30 @@
 <form method="POST" action="/detect_problem">
   <label for="issue">Select a Crop Issue:</label>
   <select name="issue" id="issue">
-    <option>Yellowing leaves</option>
-    <option>Wilting</option>
-    <option>Spots on leaves</option>
-    <option>Stunted growth</option>
-    <option>Pest infestation</option>
-  </select>
+  <option>Yellowing leaves</option>
+  <option>Wilting</option>
+  <option>Spots on leaves</option>
+  <option>Stunted growth</option>
+  <option>Pest infestation</option>
+  <option>Leaf curling</option>
+  <option>Root rot</option>
+  <option>Powdery mildew</option>
+  <option>Fruit drop</option>
+  <option>Discoloration of stem</option>
+  <option>Holes in leaves</option>
+  <option>Cracked fruits</option>
+  <option>Flower drop</option>
+  <option>Leaf burn</option>
+  <option>Mold on soil</option>
+</select>
+
   <button type="submit">🩺 Get Help</button>
 </form>
 
 {% if tip %}
-  <div class="result-box">
-    <strong>Advice:</strong> {{ tip }}
+  <div style="margin-top: 20px; padding: 10px; background-color: #e8f5e9; color: #2e7d32; border-radius: 6px;">
+   <strong>Advice:</strong>
+<p style="white-space: pre-line;">{{ tip | safe }}</p>
   </div>
 {% endif %}
 

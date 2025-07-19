@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>🌾 Kisaan Community</h1>
+
+<form method="post" action="/community/post" enctype="multipart/form-data" class="form-section">
+  <input type="text" name="name" placeholder="Your Name (Optional)">
+  <input type="text" name="title" placeholder="Title" required>
+  <textarea name="content" placeholder="Share your tip or problem..." required></textarea>
+  <select name="category">
+    <option value="Crop">Crop</option>
+    <option value="Soil">Soil</option>
+    <option value="Weather">Weather</option>
+    <option value="Government">Government Scheme</option>
+  </select>
+  <input type="file" name="image">
+  <button type="submit">Post</button>
+</form>
+
+<hr>
+
+<div class="posts">
+  {% for post in posts %}
+    <div class="post" style="margin-bottom: 30px;">
+      <h3>"{{ post.title }}"</h3>
+      <p>{{ post.content }}</p>
+
+      {% if post.image_path %}
+        <img src="{{ post.image_path }}" alt="Post Image" width="300">
+      {% endif %}
+
+      <p>
+        <strong>Category:</strong> {{ post.category }} |
+        👤 {{ post.name }} |
+        🕒 
+        {% if post.created_at %}
+          <span title="{{ post.created_at.strftime('%d %b %Y, %I:%M %p') }}">{{ post.time_ago }}</span>
+        {% else %}
+          <span>Just now</span>
+        {% endif %}
+      </p>
+
+      <h4>💬 Comments:</h4>
+      {% for comment in post.comments %}
+        <div class="comment" style="margin-left: 20px; margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-left: 4px solid #4caf50; border-radius: 6px;">
+          <p>{{ comment.content }}</p>
+          <small>— {{ comment.commenter }} at 
+            {% if comment.created_at %}
+              <span title="{{ comment.created_at.strftime('%d %b %Y, %I:%M %p') }}">{{ comment.time_ago }}</span>
+            {% else %}
+              <span>Just now</span>
+            {% endif %}
+          </small>
+        </div>
+      {% endfor %}
+
+      <form method="post" action="/community/comment/{{ post.id }}" class="comment-form" style="margin-top: 15px;">
+        <input type="text" name="commenter" placeholder="Your Name (Optional)">
+        <textarea name="content" placeholder="Write a comment..." required></textarea>
+        <button type="submit" style="margin-top: 5px;">Comment</button>
+      </form>
+
+      <!-- 🗑️ Delete Post Form -->
+      <form method="post" action="/community/delete/{{ post.id }}" onsubmit="return confirm('Are you sure you want to delete this post?');" style="margin-top: 10px;">
+        <button type="submit" style="background-color: #e63946; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer;">🗑️ Delete Post</button>
+      </form>
+
+    </div>
+    <hr>
+  {% endfor %}
+</div>
+
+{% endblock %}
