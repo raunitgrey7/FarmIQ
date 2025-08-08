@@ -6,8 +6,8 @@ import pickle
 import os
 
 # ✅ Load dataset safely
-DATA_PATH = "backend/data/Crop_recommendation.csv"
-MODEL_DIR = "backend/model"
+DATA_PATH = "/backend/data/Crop_recommendation.csv"
+MODEL_DIR = "/backend/model"
 
 if not os.path.exists(DATA_PATH):
     raise FileNotFoundError(f"❌ CSV file not found at {DATA_PATH}")
