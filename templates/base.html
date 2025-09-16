@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF‑8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FarmIQ</title>
+  <title>FarmIQ - Smart Farming Solutions</title>
 
   <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
   <link rel="icon" type="image/png" href="/static/images/fav.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <script>
     if (localStorage.getItem("darkMode") === "enabled") {
@@ -22,36 +23,50 @@
     :root {
       --bg-color: #f0fff0;
       --text-color: #333;
-      --header-bg: #2e7d32;
+      --header-bg: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
       --header-text: #fff;
       --nav-bg: #388e3c;
+      --accent-color: #4caf50;
+      --card-bg: #ffffff;
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease;
     }
 
     body {
       background-color: var(--bg-color);
       color: var(--text-color);
       margin: 0;
-      font-family: sans-serif;
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
     }
 
     header {
-      background-color: var(--header-bg);
+      background: var(--header-bg);
       color: var(--header-text);
       padding-bottom: 1rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
-    .brand-header {
+    .app-title-btn {
+      display: block;
       text-align: center;
-      padding: 1rem 0 0.5rem;
-      font-size: 1.8rem;
-      font-weight: bold;
+      padding: 1.2rem 0 0.8rem;
+      font-size: 2rem;
+      font-weight: 700;
       color: #fff;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .app-title-btn:hover {
+      transform: scale(1.02);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     .nav-links {
       display: flex;
       justify-content: center;
-      gap: 1rem;
+      gap: 0.8rem;
       flex-wrap: wrap;
       padding: 0.5rem 2rem;
       list-style: none;
@@ -68,68 +83,137 @@
       justify-content: center;
       color: white;
       background-color: var(--nav-bg);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 500;
       text-decoration: none;
-      transition: background 0.3s;
+      transition: var(--transition);
       min-width: 100px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     .nav-links a:hover {
       background-color: #2e7d32;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
 
     .nav-links a.active {
-      background-color: #4caf50;
+      background-color: var(--accent-color);
       font-weight: 600;
       text-decoration: none !important;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     .toggle-controls {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 1rem;
-      margin-top: 10px;
+      gap: 1.2rem;
+      margin-top: 15px;
+      padding: 0 1rem;
     }
 
     .icon-btn {
       cursor: pointer;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       border: none;
-      background: none;
+      background: rgba(255, 255, 255, 0.2);
       color: #fff;
-      padding: 6px;
-      transition: transform 0.2s;
+      padding: 8px 12px;
+      border-radius: 50%;
+      transition: var(--transition);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     .icon-btn:hover {
       transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .language-selector {
+      position: relative;
+      display: inline-block;
+    }
+
+    .language-dropdown {
+      position: absolute;
+      bottom: -180px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      width: 150px;
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .language-dropdown.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .lang-option {
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-option:hover {
+      background: #f0f0f0;
     }
 
     footer {
       text-align: center;
-      padding: 1rem;
+      padding: 1.5rem;
       font-size: 0.9rem;
+      background: var(--nav-bg);
+      color: white;
+      margin-top: 2rem;
     }
 
     @media (max-width: 768px) {
       .nav-links {
         flex-direction: column;
         align-items: center;
+        gap: 0.5rem;
       }
 
       .nav-links li {
+        width: 90%;
+      }
+
+      .nav-links a {
         width: 100%;
+      }
+
+      .language-dropdown {
+        bottom: auto;
+        top: 40px;
+        left: 0;
+        transform: none;
       }
     }
 
     .dark-mode {
       --bg-color: #1a1a1a;
       --text-color: #eaeaea;
-      --header-bg: #333;
+      --header-bg: linear-gradient(135deg, #333 0%, #555 100%);
       --header-text: #fff;
+      --card-bg: #2d2d2d;
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .dark-mode .lang-option:hover {
+      background: #3d3d3d;
     }
 
     /* Tabs Styling */
@@ -137,33 +221,40 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      margin: 1rem 0;
+      margin: 1.5rem 0;
       gap: 10px;
     }
 
     .tab-btn {
-      padding: 10px 20px;
+      padding: 12px 24px;
       background-color: var(--nav-bg);
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s;
+      font-weight: 600;
+      transition: var(--transition);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     .tab-btn:hover {
       background-color: #2e7d32;
+      transform: translateY(-2px);
     }
 
     .tab-btn.active {
-      background-color: #4caf50;
+      background-color: var(--accent-color);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     .tab-content {
       display: none;
-      padding: 1rem;
-      animation: fadeIn 0.3s ease-in-out;
+      padding: 1.5rem;
+      animation: fadeIn 0.4s ease-in-out;
+      background: var(--card-bg);
+      border-radius: 12px;
+      margin: 1rem;
+      box-shadow: var(--card-shadow);
     }
 
     .tab-content.active {
@@ -174,6 +265,22 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* Language Flags */
+    .flag {
+      width: 20px;
+      height: 15px;
+      display: inline-block;
+      background-size: cover;
+      border-radius: 2px;
+      margin-right: 5px;
+    }
+
+    .flag-en { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><clipPath id="a"><path d="M0 0v30h60V0z"/></clipPath><clipPath id="b"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><g clip-path="url(#a)"><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30m0-30L0 30" clip-path="url(#b)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></g></svg>'); }
+    .flag-hi { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><path d="M0 0h60v30H0z" fill="#ff9933"/><path d="M0 10h60v10H0z" fill="#fff"/><path d="M0 20h60v10H0z" fill="#138808"/><circle cx="30" cy="15" r="5" fill="#000080"/></svg>'); }
+    .flag-bn { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><path d="M0 0h60v30H0z" fill="#006a4e"/><circle cx="30" cy="15" r="8" fill="#f42a41"/></svg>'); }
+    .flag-pa { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><path d="M0 0h60v30H0z" fill="#f9cb01"/><path d="M0 0h20v30H0z" fill="#df1e35"/></svg>'); }
+    .flag-kn { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><path d="M0 0h60v10H0z" fill="#ff9933"/><path d="M0 10h60v10H0z" fill="#fff"/><path d="M0 20h60v10H0z" fill="#138808"/></svg>'); }
   </style>
 </head>
 <body>
@@ -191,12 +298,31 @@
       <li><a href="/profit" class="{% if request.url.path.startswith('/profit') %}active{% endif %}">💰 Profit</a></li>
       <li><a href="/problem" class="{% if request.url.path.startswith('/problem') %}active{% endif %}">⚠️ Issues</a></li>
       <li><a href="/instructions" class="{% if request.url.path.startswith('/instructions') %}active{% endif %}">📖 Instructions</a></li>
-       <li><a href="/community" class="{% if request.url.path.startswith('/community') %}active{% endif %} translatable" data-en="👥 Community" data-hi="👥 समुदाय">👥 Community</a></li>
+      <li><a href="/community" class="{% if request.url.path.startswith('/community') %}active{% endif %} translatable" data-en="👥 Community" data-hi="👥 समुदाय" data-bn="👥 সম্প্রদায়" data-pa="👥コミュニティ" data-kn="👥 ಸಮುದाय">👥 Community</a></li>
     </ul>
   </nav>
 
   <div class="toggle-controls">
-    <button id="language-toggle" title="Switch to Hindi" class="icon-btn">🌐</button>
+    <div class="language-selector">
+      <button id="language-toggle" title="Change Language" class="icon-btn">🌐</button>
+      <div class="language-dropdown" id="language-dropdown">
+        <div class="lang-option" data-lang="en">
+          <span class="flag flag-en"></span> English
+        </div>
+        <div class="lang-option" data-lang="hi">
+          <span class="flag flag-hi"></span> Hindi
+        </div>
+        <div class="lang-option" data-lang="bn">
+          <span class="flag flag-bn"></span> Bengali
+        </div>
+        <div class="lang-option" data-lang="pa">
+          <span class="flag flag-pa"></span> Punjabi
+        </div>
+        <div class="lang-option" data-lang="kn">
+          <span class="flag flag-kn"></span> Kannada
+        </div>
+      </div>
+    </div>
     <button id="theme-toggle" title="Toggle Dark Mode" class="icon-btn">🌙</button>
   </div>
 </header>
@@ -217,7 +343,7 @@
   function googleTranslateElementInit() {
     new google.translate.TranslateElement({
       pageLanguage: 'en',
-      includedLanguages: 'en,hi',
+      includedLanguages: 'en,hi,bn,pa,kn',
       layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
       autoDisplay: false
     }, 'google_translate_element');
@@ -228,16 +354,35 @@
 <!-- Dark Mode + Language Toggle Script -->
 <script>
   (function () {
-    const LANG_EN = "en";
-    const LANG_HI = "hi";
+    const LANGUAGES = {
+      "en": "English",
+      "hi": "Hindi",
+      "bn": "Bengali",
+      "pa": "Punjabi",
+      "kn": "Kannada"
+    };
 
     const langToggleBtn = document.getElementById("language-toggle");
+    const langDropdown = document.getElementById("language-dropdown");
     const themeToggleBtn = document.getElementById("theme-toggle");
+    const langOptions = document.querySelectorAll(".lang-option");
 
     if (localStorage.getItem("darkMode") === "enabled") {
       document.body.classList.add("dark-mode");
       document.documentElement.classList.add("dark-mode");
     }
+
+    // Toggle language dropdown
+    langToggleBtn.addEventListener("click", () => {
+      langDropdown.classList.toggle("show");
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!langToggleBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+        langDropdown.classList.remove("show");
+      }
+    });
 
     themeToggleBtn.addEventListener("click", () => {
       document.body.classList.toggle("dark-mode");
@@ -262,13 +407,22 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       waitForTranslate((combo) => {
-        if (langToggleBtn) {
-          langToggleBtn.addEventListener("click", () => {
-            const currentLang = combo.value;
-            const nextLang = currentLang === LANG_EN ? LANG_HI : LANG_EN;
-            combo.value = nextLang;
+        // Set up language options
+        langOptions.forEach(option => {
+          option.addEventListener("click", () => {
+            const lang = option.getAttribute("data-lang");
+            combo.value = lang;
             combo.dispatchEvent(new Event("change"));
+            langDropdown.classList.remove("show");
+            
+            // Update button title
+            langToggleBtn.title = `Current: ${LANGUAGES[lang]} - Click to change`;
           });
+        });
+
+        // Update button title with current language
+        if (combo.value) {
+          langToggleBtn.title = `Current: ${LANGUAGES[combo.value]} - Click to change`;
         }
       });
     });

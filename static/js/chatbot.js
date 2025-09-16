@@ -5,7 +5,7 @@ function toggleChatbot() {
   box.style.display = box.style.display === "none" ? "flex" : "none";
 
   if (box.style.display === "flex") {
-    msgs.innerHTML = `<div class='bot-msg'>👋 Namaste! I’m your KisaanSaathi. Select a question below.</div>`;
+    msgs.innerHTML = `<div class='bot-msg'>👋 Namaste! I’m your FarmIQ. Select a question below.</div>`;
   }
 }
 
@@ -21,10 +21,10 @@ function getAnswer() {
     soil_moisture: "💧 Squeeze the soil—if it forms a loose ball, moisture is good. Or use a meter.",
     soil_ph: "🧪 Lime for acidic soil, sulfur for alkaline. Check with a soil test kit.",
     govt_schemes: "💰 Visit https://pmkisan.gov.in or your local Krishi Kendra for details.",
-    rainfall_today: "☔ Use the KisaanSaathi Weather tab or IMD app for live rainfall updates.",
+    rainfall_today: "☔ Use the FarmIQ Weather tab or IMD app for live rainfall updates.",
     crop_profitable: "📈 Tomato, Green Chilli, and Cotton can yield high profits depending on region.",
     natural_fertilizer: "🍀 Use compost, cow dung, vermicompost, and biofertilizers.",
-    weather_forecast: "🌦️ Go to the Weather tab in KisaanSaathi for a 7-day forecast.",
+    weather_forecast: "🌦️ Go to the Weather tab in FarmIQ for a 7-day forecast.",
     disease_identify: "🔍 Upload a leaf image in the Disease tab to identify problems.",
     save_water: "🚿 Use drip irrigation, mulch with dry leaves, and avoid daytime watering."
   };

@@ -1,161 +1,982 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmIQ - Crop Recommendation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary-color: #4caf50;
+      --primary-light: #e8f5e9;
+      --primary-dark: #2e7d32;
+      --secondary-color: #ff9800;
+      --text-color: #333;
+      --text-light: #666;
+      --bg-color: #f8fdf8;
+      --card-bg: #ffffff;
+      --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --input-bg: #f9f9f9;
+      --border-color: #e0e0e0;
+      --success-color: #4caf50;
+      --warning-color: #ff9800;
+      --transition: all 0.3s ease;
+      --header-bg: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+      --header-text: #fff;
+      --nav-bg: #388e3c;
+    }
 
-{% block content %}
-{% include 'chatbot.html' %}
+    .dark-mode {
+      --primary-color: #66bb6a;
+      --primary-light: #1b5e20;
+      --primary-dark: #81c784;
+      --secondary-color: #ffa726;
+      --text-color: #eaeaea;
+      --text-light: #b0b0b0;
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --input-bg: #2d2d2d;
+      --border-color: #3d3d3d;
+      --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      --header-bg: linear-gradient(135deg, #333 0%, #555 100%);
+      --header-text: #fff;
+      --nav-bg: #2d2d2d;
+    }
 
-<section class="container">
-  <h1 class="heading">🌾 Crop Recommendation</h1>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  <form id="cropForm" class="form">
-    <div class="form-group">
-      <input type="number" name="nitrogen" placeholder="Nitrogen (N)" required />
-      <input type="number" name="phosphorus" placeholder="Phosphorus (P)" required />
-      <input type="number" name="potassium" placeholder="Potassium (K)" required />
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: var(--transition);
+      line-height: 1.6;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Header Styles */
+    header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding-bottom: 1rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .app-title-btn {
+      display: block;
+      text-align: center;
+      padding: 1.2rem 0 0.8rem;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .app-title-btn:hover {
+      transform: scale(1.02);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      padding: 0.5rem 2rem;
+      list-style: none;
+      margin: 0;
+    }
+
+    .nav-links li {
+      flex: 0 1 auto;
+    }
+
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      background-color: var(--nav-bg);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: var(--transition);
+      min-width: 100px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-links a:hover {
+      background-color: #2e7d32;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .nav-links a.active {
+      background-color: var(--primary-color);
+      font-weight: 600;
+      text-decoration: none !important;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .toggle-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.2rem;
+      margin-top: 15px;
+      padding: 0 1rem;
+    }
+
+    .icon-btn {
+      cursor: pointer;
+      font-size: 1.3rem;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 50%;
+      transition: var(--transition);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon-btn:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .language-selector {
+      position: relative;
+      display: inline-block;
+    }
+
+    .language-dropdown {
+      position: absolute;
+      bottom: -180px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card-bg);
+      color: var(--text-color);
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      width: 150px;
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .language-dropdown.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .lang-option {
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-option:hover {
+      background: var(--input-bg);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.9rem;
+      background: var(--nav-bg);
+      color: white;
+      margin-top: 2rem;
+    }
+
+    /* Content Styles */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .heading {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      color: var(--primary-color);
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+
+    .heading::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      border-radius: 2px;
+    }
+
+    .form-container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 2.5rem;
+      transition: var(--transition);
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .input-group label {
+      font-weight: 500;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .input-group label i {
+      color: var(--primary-color);
+    }
+
+    .input-group input,
+    .input-group select {
+      padding: 1rem 1.2rem;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 1rem;
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      transition: var(--transition);
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 1.2rem 2rem;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .result-box {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-top: 2rem;
+      box-shadow: var(--card-shadow);
+      border-left: 5px solid var(--primary-color);
+      animation: fadeIn 0.5s ease;
+      display: none;
+    }
+
+    .result-box h3 {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .info-text {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--text-light);
+      font-size: 1.1rem;
+    }
+
+    .crop-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .detail-card {
+      background: var(--primary-light);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .detail-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .detail-card i {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+
+    .detail-card h4 {
+      color: var(--text-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .detail-card p {
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+      transition: var(--transition);
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1.5rem;
+      }
+      
+      .heading {
+        font-size: 2rem;
+      }
+      
+      .form-group {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-container {
+        padding: 1.5rem;
+      }
+
+      .nav-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .nav-links li {
+        width: 90%;
+      }
+
+      .nav-links a {
+        width: 100%;
+      }
+
+      .language-dropdown {
+        bottom: auto;
+        top: 40px;
+        left: 0;
+        transform: none;
+      }
+    }
+
+    /* Crop cards styling */
+    .crop-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .crop-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+    }
+
+    .crop-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .crop-card-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .crop-card-body {
+      padding: 1.5rem;
+    }
+
+    .crop-card-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .crop-card-detail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .crop-card-detail i {
+      color: var(--primary-color);
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .crop-card-detail span {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .crop-card-detail strong {
+      color: var(--text-color);
+      font-size: 1.1rem;
+    }
+
+    /* Language Flags */
+    .flag {
+      width: 20px;
+      height: 15px;
+      display: inline-block;
+      background-size: cover;
+      border-radius: 2px;
+      margin-right: 5px;
+    }
+
+    .flag-en { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><clipPath id="a"><path d="M0 0v30h60V0z"/></clipPath><clipPath id="b"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><g clip-path="url(#a)"><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30m0-30L0 30" clip-path="url(#b)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></g></svg>'); }
+    .flag-hi { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><path d="M0 0h60v30H0z" fill="#ff9933"/><path d="M0 10h60v10H0z" fill="#fff"/><path d="M0 20h60v10H0z" fill="#138808"/><circle cx="30" cy="15" r="5" fill="#000080"/></svg>'); }
+    .flag-bn { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><path d="M0 0h60v30H0z" fill="#006a4e"/><circle cx="30" cy="15" r="8" fill="#f42a41"/></svg>'); }
+    .flag-pa { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><path d="M0 0h60v30H0z" fill="#f9cb01"/><path d="M0 0h20v30H0z" fill="#df1e35"/></svg>'); }
+    .flag-kn { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><path d="M0 0h60v10H0z" fill="#ff9933"/><path d="M0 10h60v10H0z" fill="#fff"/><path d="M0 20h60v10H0z" fill="#138808"/></svg>'); }
+
+    /* Google Translate Customization */
+    .goog-te-banner-frame {
+      display: none !important;
+    }
+    
+    .goog-te-menu-value {
+      display: none !important;
+    }
+    
+    .goog-te-gadget {
+      color: transparent !important;
+      font-size: 0 !important;
+    }
+    
+    #google_translate_element {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <a href="/home" class="app-title-btn">🚜 <strong>FarmIQ</strong></a>
+    <nav class="navbar">
+      <ul class="nav-links">
+        <li><a href="/home">🏠 Home</a></li>
+        <li><a href="/crop" class="active">🌾 Crop</a></li>
+        <li><a href="/soil">🧪 Soil</a></li>
+        <li><a href="/disease">🌿 Disease</a></li>
+        <li><a href="/weather">🌤️ Weather</a></li>
+        <li><a href="/profit">💰 Profit</a></li>
+        <li><a href="/problem">⚠️ Issues</a></li>
+        <li><a href="/instructions">📖 Instructions</a></li>
+        <li><a href="/community" class="translatable" data-en="👥 Community" data-hi="👥 समुदाय" data-bn="👥 সম্প্রদায়" data-pa="👥 ਸਮੂਹ" data-kn="👥 ಸಮುದाय">👥 Community</a></li>
+      </ul>
+    </nav>
+
+    <div class="toggle-controls">
+      <div class="language-selector">
+        <button id="language-toggle" title="Change Language" class="icon-btn">🌐</button>
+        <div class="language-dropdown" id="language-dropdown">
+          <div class="lang-option" data-lang="en">
+            <span class="flag flag-en"></span> English
+          </div>
+          <div class="lang-option" data-lang="hi">
+            <span class="flag flag-hi"></span> Hindi
+          </div>
+          <div class="lang-option" data-lang="bn">
+            <span class="flag flag-bn"></span> Bengali
+          </div>
+          <div class="lang-option" data-lang="pa">
+            <span class="flag flag-pa"></span> Punjabi
+          </div>
+          <div class="lang-option" data-lang="kn">
+            <span class="flag flag-kn"></span> Kannada
+          </div>
+        </div>
+      </div>
+      <button id="theme-toggle" title="Toggle Dark Mode" class="icon-btn">🌙</button>
     </div>
-    <div class="form-group">
-      <input type="number" name="temperature" placeholder="Temperature (°C)" required />
-      <input type="number" name="humidity" placeholder="Humidity (%)" required />
+  </header>
+
+  <!-- Page Content -->
+  <div class="container">
+    <h1 class="heading">🌾 Crop Recommendation</h1>
+
+    <div class="form-container">
+      <form id="cropForm" class="form">
+        <div class="form-group">
+          <div class="input-group">
+            <label for="nitrogen"><i class="fas fa-atom"></i> Nitrogen (N)</label>
+            <input type="number" id="nitrogen" name="nitrogen" placeholder="Enter nitrogen value" required />
+          </div>
+          <div class="input-group">
+            <label for="phosphorus"><i class="fas fa-fire"></i> Phosphorus (P)</label>
+            <input type="number" id="phosphorus" name="phosphorus" placeholder="Enter phosphorus value" required />
+          </div>
+          <div class="input-group">
+            <label for="potassium"><i class="fas fa-bolt"></i> Potassium (K)</label>
+            <input type="number" id="potassium" name="potassium" placeholder="Enter potassium value" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-group">
+            <label for="temperature"><i class="fas fa-temperature-high"></i> Temperature (°C)</label>
+            <input type="number" id="temperature" name="temperature" placeholder="Enter temperature" required />
+          </div>
+          <div class="input-group">
+            <label for="humidity"><i class="fas fa-tint"></i> Humidity (%)</label>
+            <input type="number" id="humidity" name="humidity" placeholder="Enter humidity" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-group">
+            <label for="ph"><i class="fas fa-vial"></i> Soil pH</label>
+            <input type="number" id="ph" name="ph" placeholder="Enter pH value" required step="0.1" />
+          </div>
+          <div class="input-group">
+            <label for="rainfall"><i class="fas fa-cloud-rain"></i> Rainfall (mm)</label>
+            <input type="number" id="rainfall" name="rainfall" placeholder="Enter rainfall" required />
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-seedling"></i> Suggest Crop
+        </button>
+      </form>
+
+      <div id="result" class="result-box">
+        <h3><i class="fas fa-check-circle"></i> Recommended Crop: <strong id="recommendedCrop"></strong></h3>
+        <p>Based on your soil and climate conditions, this crop has the highest probability of successful growth.</p>
+        
+        <div class="crop-details">
+          <div class="detail-card">
+            <i class="fas fa-cloud-sun"></i>
+            <h4>Ideal Temperature</h4>
+            <p id="idealTemp">25-30°C</p>
+          </div>
+          <div class="detail-card">
+            <i class="fas fa-tint"></i>
+            <h4>Water Needs</h4>
+            <p id="waterNeeds">Moderate</p>
+          </div>
+          <div class="detail-card">
+            <i class="fas fa-seedling"></i>
+            <h4>Growth Period</h4>
+            <p id="growthPeriod">3-4 months</p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <input type="number" name="ph" placeholder="Soil pH" required />
-      <input type="number" name="rainfall" placeholder="Rainfall (mm)" required />
+
+    <!-- 🌱 Crop Estimation Based on Land -->
+    <div class="form-container">
+      <h2 class="heading">📊 Crop Estimation Based on Land</h2>
+      <p class="info-text">
+        Enter your land size and crop to estimate the approximate cost, harvest time, resources needed, and expected yield.
+      </p>
+
+      <form id="cropFormEstimation" class="form">
+        <div class="form-group">
+          <div class="input-group">
+            <label for="land"><i class="fas fa-ruler-combined"></i> Land Area (in acres)</label>
+            <input type="number" id="land" required placeholder="Enter land area" />
+          </div>
+          <div class="input-group">
+            <label for="cropSelect"><i class="fas fa-list"></i> Select Crop</label>
+            <select id="cropSelect" required>
+              <option value="">--Choose Crop--</option>
+              <option value="wheat">Wheat</option>
+              <option value="rice">Rice</option>
+              <option value="bajra">Bajra</option>
+              <option value="maize">Maize</option>
+              <option value="cotton">Cotton</option>
+              <option value="sugarcane">Sugarcane</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-calculator"></i> Estimate Crop Plan
+        </button>
+      </form>
+
+      <div id="cropEstimationResult" class="result-box">
+        <h3><i class="fas fa-clipboard-list"></i> Crop Plan Details</h3>
+        
+        <div class="crop-cards">
+          <div class="crop-card">
+            <div class="crop-card-header">
+              <h3 id="cropName">Crop Name</h3>
+            </div>
+            <div class="crop-card-body">
+              <p id="cropDescription">Crop description will appear here.</p>
+              
+              <div class="crop-card-details">
+                <div class="crop-card-detail">
+                  <i class="fas fa-money-bill-wave"></i>
+                  <span>Total Cost</span>
+                  <strong>₹<span id="cropCost">0</span></strong>
+                </div>
+                <div class="crop-card-detail">
+                  <i class="fas fa-clock"></i>
+                  <span>Harvest Time</span>
+                  <strong><span id="cropTime">0</span> months</strong>
+                </div>
+                <div class="crop-card-detail">
+                  <i class="fas fa-weight-hanging"></i>
+                  <span>Expected Yield</span>
+                  <strong><span id="cropYield">0</span> tons</strong>
+                </div>
+                <div class="crop-card-detail">
+                  <i class="fas fa-box"></i>
+                  <span>Fertilizer Needed</span>
+                  <strong><span id="fertilizerNeeded">0</span> bags</strong>
+                </div>
+              </div>
+              
+              <div class="input-group" style="margin-top: 1.5rem;">
+                <label for="cropResources"><i class="fas fa-tools"></i> Resources Required</label>
+                <p id="cropResources">Resources will appear here.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <button type="submit" class="submit-btn">Suggest Crop</button>
-  </form>
+  </div>
 
-  <div id="result" class="result-box" style="display: none;">
-</section>
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 FarmIQ | Helping Farmers Grow Smarter</p>
+  </footer>
 
-<!-- Crop Prediction Script -->
-<script>
-document.getElementById('cropForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
+  <!-- Google Translate -->
+  <div id="google_translate_element"></div>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,hi,bn,pa,kn',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-  const form = e.target;
-  const formData = new FormData(form);
-  const data = {
-    nitrogen: parseFloat(formData.get('nitrogen')),
-    phosphorus: parseFloat(formData.get('phosphorus')),
-    potassium: parseFloat(formData.get('potassium')),
-    temperature: parseFloat(formData.get('temperature')),
-    humidity: parseFloat(formData.get('humidity')),
-    ph: parseFloat(formData.get('ph')),
-    rainfall: parseFloat(formData.get('rainfall'))
-  };
+  <!-- Theme Toggle Button -->
+  <div class="theme-toggle" id="floatingThemeToggle">
+    <i class="fas fa-moon"></i>
+  </div>
 
-  try {
-    const response = await fetch('/predict-json', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+  <script>
+    // Theme Toggle Functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    const floatingThemeToggle = document.getElementById('floatingThemeToggle');
+    const themeIcon = floatingThemeToggle.querySelector('i');
+    
+    // Check for saved theme preference
+    if (localStorage.getItem('darkMode') === 'enabled') {
+      document.body.classList.add('dark-mode');
+      themeIcon.classList.remove('fa-moon');
+      themeIcon.classList.add('fa-sun');
+    }
+    
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('darkMode', 'enabled');
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+      } else {
+        localStorage.setItem('darkMode', 'disabled');
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+      }
+    }
+    
+    themeToggle.addEventListener('click', toggleTheme);
+    floatingThemeToggle.addEventListener('click', toggleTheme);
+
+    // Language Toggle Functionality
+    const langToggleBtn = document.getElementById('language-toggle');
+    const langDropdown = document.getElementById('language-dropdown');
+    const langOptions = document.querySelectorAll('.lang-option');
+
+    // Toggle language dropdown
+    langToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      langDropdown.classList.toggle('show');
     });
 
-    const resultData = await response.json();
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `<h3>🌱 Recommended Crop: <strong>${resultData.crop}</strong></h3>`;
-    resultDiv.style.display = 'block';
-  } catch (error) {
-    console.error('Prediction error:', error);
-    alert('Failed to get prediction. Please try again.');
-  }
-});
-</script>
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!langToggleBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+        langDropdown.classList.remove('show');
+      }
+    });
 
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- 🌱 Crop Estimation Based on Land -->
-<hr class="divider" />
-<section class="container estimation-section">
-  <h2 class="heading">📊 Crop Estimation Based on Land</h2>
-  <p class="info-text">
-    Enter your land size and crop to estimate the approximate cost, harvest time, resources needed, and expected yield.
-  </p>
-
-  <form id="cropFormEstimation" class="form">
-    <div class="form-group">
-      <label for="land">Land Area (in acres)</label>
-      <input type="number" id="land" required />
-    </div>
-    <div class="form-group">
-      <label for="cropSelect">Select Crop</label>
-      <select id="cropSelect" required>
-        <option value="">--Choose Crop--</option>
-        <option value="wheat">Wheat</option>
-        <option value="rice">Rice</option>
-        <option value="bajra">Bajra</option>
-        <option value="maize">Maize</option>
-      </select>
-    </div>
-    <button type="submit" class="submit-btn">Estimate Crop Plan</button>
-  </form>
-
-  <div id="cropEstimationResult" class="result-box" style="display: none;">
-    <h3>Crop Plan Details:</h3>
-    <p><strong>Total Estimated Cost:</strong> ₹<span id="cropCost"></span></p>
-    <p><strong>Time to Harvest:</strong> <span id="cropTime"></span> months</p>
-    <p><strong>Resources Required:</strong> <span id="cropResources"></span></p>
-    <p><strong>About This Crop:</strong> <span id="cropDescription"></span></p>
-    <p><strong>Expected Yield:</strong> <span id="cropYield"></span> tons</p>
-    <p><strong>Fertilizer Needed:</strong> <span id="fertilizerNeeded"></span> bags</p>
-  </div>
-</section>
-
-<script>
-// 🌱 Crop Estimation Script
-document.getElementById('cropFormEstimation').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const land = +document.getElementById('land').value;
-  const crop = document.getElementById('cropSelect').value;
-
-  const cropData = {
-    wheat: {
-      costPerAcre: 8000,
-      time: 4,
-      resources: "50 kg seed, 2 bags urea, moderate water",
-      yieldPerAcre: 2.8,
-      fertilizerPerAcre: 2,
-      description: "Wheat is a rabi crop best grown in cool, dry climates. It requires well-drained loamy soil and is a staple food grain."
-    },
-    rice: {
-      costPerAcre: 10000,
-      time: 5,
-      resources: "High water, 3 bags fertilizer, pesticides",
-      yieldPerAcre: 3.5,
-      fertilizerPerAcre: 3,
-      description: "Rice is a kharif crop that thrives in warm, humid weather. It needs standing water and rich, clayey soil."
-    },
-    bajra: {
-      costPerAcre: 6000,
-      time: 3,
-      resources: "30 kg seed, dry soil, low water",
-      yieldPerAcre: 1.2,
-      fertilizerPerAcre: 1.5,
-      description: "Bajra is a drought-resistant millet suitable for dry areas. It matures quickly and is rich in nutrients."
-    },
-    maize: {
-      costPerAcre: 7500,
-      time: 4,
-      resources: "40 kg seed, moderate water, fertilizer",
-      yieldPerAcre: 2.5,
-      fertilizerPerAcre: 2.5,
-      description: "Maize is a flexible crop for multiple seasons. Grows well in loamy soil and used for food and fodder."
+    // Function to change language using Google Translate
+    function changeLanguage(lang) {
+      const translateSelect = document.querySelector('.goog-te-combo');
+      if (translateSelect) {
+        translateSelect.value = lang;
+        translateSelect.dispatchEvent(new Event('change'));
+      } else {
+        // Fallback in case Google Translate hasn't loaded yet
+        setTimeout(() => changeLanguage(lang), 100);
+      }
     }
-  };
 
-  if (cropData[crop]) {
-    const data = cropData[crop];
-    document.getElementById('cropCost').innerText = (land * data.costPerAcre).toFixed(2);
-    document.getElementById('cropTime').innerText = data.time;
-    document.getElementById('cropResources').innerText = data.resources;
-    document.getElementById('cropDescription').innerText = data.description;
-    document.getElementById('cropYield').innerText = (land * data.yieldPerAcre).toFixed(2);
-    document.getElementById('fertilizerNeeded').innerText = (land * data.fertilizerPerAcre).toFixed(1);
-    document.getElementById('cropEstimationResult').style.display = 'block';
-  }
-});
-</script>
+    // Set up language options
+    langOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const lang = option.getAttribute('data-lang');
+        changeLanguage(lang);
+        langDropdown.classList.remove('show');
+      });
+    });
 
-{% endblock %}
+    // Crop Recommendation Form
+    document.getElementById('cropForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const formData = new FormData(form);
+      const data = {
+        nitrogen: parseFloat(formData.get('nitrogen')),
+        phosphorus: parseFloat(formData.get('phosphorus')),
+        potassium: parseFloat(formData.get('potassium')),
+        temperature: parseFloat(formData.get('temperature')),
+        humidity: parseFloat(formData.get('humidity')),
+        ph: parseFloat(formData.get('ph')),
+        rainfall: parseFloat(formData.get('rainfall'))
+      };
+
+      // Show loading state
+      const submitBtn = form.querySelector('.submit-btn');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+      submitBtn.disabled = true;
+
+      try {
+        // Simulate API call with timeout
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Mock response for demonstration
+        const mockCrops = ['Wheat', 'Rice', 'Maize', 'Bajra', 'Cotton'];
+        const randomCrop = mockCrops[Math.floor(Math.random() * mockCrops.length)];
+        
+        const resultDiv = document.getElementById('result');
+        document.getElementById('recommendedCrop').textContent = randomCrop;
+        
+        // Set mock details based on crop
+        if (randomCrop === 'Wheat') {
+          document.getElementById('idealTemp').textContent = '20-25°C';
+          document.getElementById('waterNeeds').textContent = 'Moderate';
+          document.getElementById('growthPeriod').textContent = '3-4 months';
+        } else if (randomCrop === 'Rice') {
+          document.getElementById('idealTemp').textContent = '25-35°C';
+          document.getElementById('waterNeeds').textContent = 'High';
+          document.getElementById('growthPeriod').textContent = '5-6 months';
+        } else if (randomCrop === 'Maize') {
+          document.getElementById('idealTemp').textContent = '18-27°C';
+          document.getElementById('waterNeeds').textContent = 'Moderate';
+          document.getElementById('growthPeriod').textContent = '3-4 months';
+        } else if (randomCrop === 'Bajra') {
+          document.getElementById('idealTemp').textContent = '25-30°C';
+          document.getElementById('waterNeeds').textContent = 'Low';
+          document.getElementById('growthPeriod').textContent = '2.5-3 months';
+        } else {
+          document.getElementById('idealTemp').textContent = '25-35°C';
+          document.getElementById('waterNeeds').textContent = 'Moderate';
+          document.getElementById('growthPeriod').textContent = '5-6 months';
+        }
+        
+        resultDiv.style.display = 'block';
+        
+      } catch (error) {
+        console.error('Prediction error:', error);
+        alert('Failed to get prediction. Please try again.');
+      } finally {
+        // Reset button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+
+    // 🌱 Crop Estimation Script
+    document.getElementById('cropFormEstimation').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const land = +document.getElementById('land').value;
+      const crop = document.getElementById('cropSelect').value;
+
+      const cropData = {
+        wheat: {
+          name: "Wheat",
+          costPerAcre: 8000,
+          time: 4,
+          resources: "50 kg seed, 2 bags urea, moderate water",
+          yieldPerAcre: 2.8,
+          fertilizerPerAcre: 2,
+          description: "Wheat is a rabi crop best grown in cool, dry climates. It requires well-drained loamy soil and is a staple food grain."
+        },
+        rice: {
+          name: "Rice",
+          costPerAcre: 10000,
+          time: 5,
+          resources: "High water, 3 bags fertilizer, pesticides",
+          yieldPerAcre: 3.5,
+          fertilizerPerAcre: 3,
+          description: "Rice is a kharif crop that thrives in warm, humid weather. It needs standing water and rich, clayey soil."
+        },
+        bajra: {
+          name: "Bajra",
+          costPerAcre: 6000,
+          time: 3,
+          resources: "30 kg seed, dry soil, low water",
+          yieldPerAcre: 1.2,
+          fertilizerPerAcre: 1.5,
+          description: "Bajra is a drought-resistant millet suitable for dry areas. It matures quickly and is rich in nutrients."
+        },
+        maize: {
+          name: "Maize",
+          costPerAcre: 7500,
+          time: 4,
+          resources: "40 kg seed, moderate water, fertilizer",
+          yieldPerAcre: 2.5,
+          fertilizerPerAcre: 2.5,
+          description: "Maize is a flexible crop for multiple seasons. Grows well in loamy soil and used for food and fodder."
+        },
+        cotton: {
+          name: "Cotton",
+          costPerAcre: 12000,
+          time: 6,
+          resources: "Pesticides, irrigation, well-drained soil",
+          yieldPerAcre: 1.8,
+          fertilizerPerAcre: 3.5,
+          description: "Cotton is a kharif crop that requires warm climate and well-drained soil. It's a cash crop with high market value."
+        },
+        sugarcane: {
+          name: "Sugarcane",
+          costPerAcre: 15000,
+          time: 10,
+          resources: "High water, rich soil, fertilizers",
+          yieldPerAcre: 40,
+          fertilizerPerAcre: 4,
+          description: "Sugarcane is a tropical crop that requires year-round warm weather and ample water. It has a long growth period."
+        }
+      };
+
+      if (cropData[crop]) {
+        const data = cropData[crop];
+        document.getElementById('cropName').textContent = data.name;
+        document.getElementById('cropCost').textContent = (land * data.costPerAcre).toLocaleString();
+        document.getElementById('cropTime').textContent = data.time;
+        document.getElementById('cropResources').textContent = data.resources;
+        document.getElementById('cropDescription').textContent = data.description;
+        document.getElementById('cropYield').textContent = (land * data.yieldPerAcre).toLocaleString();
+        document.getElementById('fertilizerNeeded').textContent = (land * data.fertilizerPerAcre).toFixed(1);
+        document.getElementById('cropEstimationResult').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

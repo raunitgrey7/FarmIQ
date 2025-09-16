@@ -1,9 +1,9 @@
-// 🌱 KisaanSaathi – Main JS File
+// 🌱 FarmIQ – Main JS File
 console.log("✅ JS Loaded");
 
 // 🌐 Translations Dictionary
 const translations = {
-  "title": { "en": "KisaanSaathi 🌾", "hi": "किसानसाथी 🌾" },
+  "title": { "en": "FarmIQ 🌾", "hi": "किसानसाथी 🌾" },
   "lang_toggle": { "en": "🇮🇳 View in Hindi", "hi": "🇬🇧 View in English" },
   "dark_toggle": { "en": "🌙 Dark Mode", "hi": "🌙 डार्क मोड" },
   "crop_tab": { "en": "🌾 Crop Prediction", "hi": "🌾 फसल सुझाव" },
@@ -274,6 +274,6 @@ function showToast(message) {
 }
 
 // 🌱 Welcome Toast
-showToast("Welcome to KisaanSaathi 🌿");
+showToast("Welcome to FarmIQ 🌿");
 
 
