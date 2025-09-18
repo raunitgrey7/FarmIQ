@@ -547,6 +547,108 @@
     #google_translate_element {
       display: none;
     }
+
+    /* New styles for location recommendation */
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .slider-with-value {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--input-bg);
+      outline: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      cursor: pointer;
+    }
+
+    .slider-value {
+      min-width: 40px;
+      text-align: center;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .chart-container {
+      width: 100%;
+      max-width: 400px;
+      margin: 2rem auto;
+    }
+
+    .crop-ranking {
+      margin-top: 1.5rem;
+    }
+
+    .crop-rank-item {
+      display: flex;
+      align-items: center;
+      padding: 0.8rem;
+      border-radius: 8px;
+      background: var(--primary-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .rank-number {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 1rem;
+    }
+
+    .crop-info {
+      flex: 1;
+    }
+
+    .crop-name {
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .similarity-bar {
+      height: 8px;
+      background: var(--input-bg);
+      border-radius: 4px;
+      margin-top: 0.3rem;
+      overflow: hidden;
+    }
+
+    .similarity-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+      border-radius: 4px;
+    }
+
+    .similarity-value {
+      margin-left: 1rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      min-width: 50px;
+      text-align: right;
+    }
   </style>
 </head>
 <body>
@@ -596,75 +698,71 @@
   <div class="container">
     <h1 class="heading">🌾 Crop Recommendation</h1>
 
+    <!-- New Crop Recommendation Form -->
     <div class="form-container">
-      <form id="cropForm" class="form">
+      <form id="locationCropForm" class="form">
         <div class="form-group">
           <div class="input-group">
-            <label for="nitrogen"><i class="fas fa-atom"></i> Nitrogen (N)</label>
-            <input type="number" id="nitrogen" name="nitrogen" placeholder="Enter nitrogen value" required />
+            <label for="state"><i class="fas fa-map-marker-alt"></i> State</label>
+            <select id="state" name="state" required>
+              <option value="">Select State</option>
+              <!-- States will be populated dynamically -->
+            </select>
           </div>
           <div class="input-group">
-            <label for="phosphorus"><i class="fas fa-fire"></i> Phosphorus (P)</label>
-            <input type="number" id="phosphorus" name="phosphorus" placeholder="Enter phosphorus value" required />
+            <label for="district"><i class="fas fa-map-pin"></i> District</label>
+            <select id="district" name="district" required disabled>
+              <option value="">Select District</option>
+              <!-- Districts will be populated based on state -->
+            </select>
           </div>
           <div class="input-group">
-            <label for="potassium"><i class="fas fa-bolt"></i> Potassium (K)</label>
-            <input type="number" id="potassium" name="potassium" placeholder="Enter potassium value" required />
+            <label for="season"><i class="fas fa-cloud-sun"></i> Season</label>
+            <select id="season" name="season" required disabled>
+              <option value="">Select Season</option>
+              <!-- Seasons will be populated based on district -->
+            </select>
           </div>
         </div>
 
         <div class="form-group">
           <div class="input-group">
-            <label for="temperature"><i class="fas fa-temperature-high"></i> Temperature (°C)</label>
-            <input type="number" id="temperature" name="temperature" placeholder="Enter temperature" required />
-          </div>
-          <div class="input-group">
-            <label for="humidity"><i class="fas fa-tint"></i> Humidity (%)</label>
-            <input type="number" id="humidity" name="humidity" placeholder="Enter humidity" required />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <div class="input-group">
-            <label for="ph"><i class="fas fa-vial"></i> Soil pH</label>
-            <input type="number" id="ph" name="ph" placeholder="Enter pH value" required step="0.1" />
-          </div>
-          <div class="input-group">
-            <label for="rainfall"><i class="fas fa-cloud-rain"></i> Rainfall (mm)</label>
-            <input type="number" id="rainfall" name="rainfall" placeholder="Enter rainfall" required />
+            <label for="temperature"><i class="fas fa-temperature-high"></i> Current Temperature (°C)</label>
+            <div class="slider-container">
+              <div class="slider-with-value">
+                <input type="range" id="temperature" name="temperature" min="5" max="45" value="25" class="slider">
+                <span id="temperatureValue" class="slider-value">25°C</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-light);">
+                <span>5°C</span>
+                <span>45°C</span>
+              </div>
+            </div>
           </div>
         </div>
 
         <button type="submit" class="submit-btn">
-          <i class="fas fa-seedling"></i> Suggest Crop
+          <i class="fas fa-seedling"></i> Recommend Crops
         </button>
       </form>
 
-      <div id="result" class="result-box">
+      <div id="locationResult" class="result-box">
         <h3><i class="fas fa-check-circle"></i> Recommended Crop: <strong id="recommendedCrop"></strong></h3>
-        <p>Based on your soil and climate conditions, this crop has the highest probability of successful growth.</p>
         
-        <div class="crop-details">
-          <div class="detail-card">
-            <i class="fas fa-cloud-sun"></i>
-            <h4>Ideal Temperature</h4>
-            <p id="idealTemp">25-30°C</p>
-          </div>
-          <div class="detail-card">
-            <i class="fas fa-tint"></i>
-            <h4>Water Needs</h4>
-            <p id="waterNeeds">Moderate</p>
-          </div>
-          <div class="detail-card">
-            <i class="fas fa-seedling"></i>
-            <h4>Growth Period</h4>
-            <p id="growthPeriod">3-4 months</p>
+        <div class="chart-container">
+          <canvas id="cropSimilarityChart"></canvas>
+        </div>
+        
+        <div class="crop-ranking">
+          <h4>Top Crop Recommendations:</h4>
+          <div id="cropRankingList">
+            <!-- Crop ranking will be populated here -->
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 🌱 Crop Estimation Based on Land -->
+    <!-- 🌱 Crop Estimation Based on Land (UNCHANGED) -->
     <div class="form-container">
       <h2 class="heading">📊 Crop Estimation Based on Land</h2>
       <p class="info-text">
@@ -834,20 +932,119 @@
       });
     });
 
-    // Crop Recommendation Form
-    document.getElementById('cropForm').addEventListener('submit', async function (e) {
+    // Temperature slider functionality
+    const tempSlider = document.getElementById('temperature');
+    const tempValue = document.getElementById('temperatureValue');
+    
+    tempSlider.addEventListener('input', () => {
+      tempValue.textContent = `${tempSlider.value}°C`;
+    });
+
+    // State dropdown population
+    async function loadStates() {
+      try {
+        const response = await fetch('/locations');
+        const data = await response.json();
+        const stateSelect = document.getElementById('state');
+        
+        // Clear existing options except the first one
+        while (stateSelect.options.length > 1) {
+          stateSelect.remove(1);
+        }
+        
+        // Add states to dropdown
+        data.states.forEach(state => {
+          const option = document.createElement('option');
+          option.value = state;
+          option.textContent = state;
+          stateSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error loading states:', error);
+        alert('Failed to load states. Please try again later.');
+      }
+    }
+
+    // District dropdown population based on state
+    async function loadDistricts(state) {
+      const districtSelect = document.getElementById('district');
+      districtSelect.disabled = true;
+      districtSelect.innerHTML = '<option value="">Select District</option>';
+      
+      try {
+        const response = await fetch(`/locations?state=${encodeURIComponent(state)}`);
+        const data = await response.json();
+        
+        // Add districts to dropdown
+        data.districts.forEach(district => {
+          const option = document.createElement('option');
+          option.value = district;
+          option.textContent = district;
+          districtSelect.appendChild(option);
+        });
+        
+        districtSelect.disabled = false;
+      } catch (error) {
+        console.error('Error loading districts:', error);
+        alert('Failed to load districts. Please try again later.');
+      }
+    }
+
+    // Season dropdown population based on district
+    async function loadSeasons(district) {
+      const seasonSelect = document.getElementById('season');
+      seasonSelect.disabled = true;
+      seasonSelect.innerHTML = '<option value="">Select Season</option>';
+      
+      try {
+        const response = await fetch(`/locations?district=${encodeURIComponent(district)}`);
+        const data = await response.json();
+        
+        // Add seasons to dropdown
+        data.seasons.forEach(season => {
+          const option = document.createElement('option');
+          option.value = season;
+          option.textContent = season;
+          seasonSelect.appendChild(option);
+        });
+        
+        seasonSelect.disabled = false;
+      } catch (error) {
+        console.error('Error loading seasons:', error);
+        alert('Failed to load seasons. Please try again later.');
+      }
+    }
+
+    // Event listeners for dropdown changes
+    document.getElementById('state').addEventListener('change', function() {
+      if (this.value) {
+        loadDistricts(this.value);
+        // Reset district and season
+        document.getElementById('district').value = '';
+        document.getElementById('season').value = '';
+        document.getElementById('season').disabled = true;
+      }
+    });
+
+    document.getElementById('district').addEventListener('change', function() {
+      if (this.value) {
+        loadSeasons(this.value);
+        // Reset season
+        document.getElementById('season').value = '';
+      }
+    });
+
+    // New Crop Recommendation Form Submission
+    document.getElementById('locationCropForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
       const form = e.target;
       const formData = new FormData(form);
       const data = {
-        nitrogen: parseFloat(formData.get('nitrogen')),
-        phosphorus: parseFloat(formData.get('phosphorus')),
-        potassium: parseFloat(formData.get('potassium')),
-        temperature: parseFloat(formData.get('temperature')),
-        humidity: parseFloat(formData.get('humidity')),
-        ph: parseFloat(formData.get('ph')),
-        rainfall: parseFloat(formData.get('rainfall'))
+        state: formData.get('state'),
+        district: formData.get('district'),
+        season: formData.get('season'),
+        temperature: parseFloat(formData.get('temperature'))
       };
 
       // Show loading state
@@ -857,40 +1054,22 @@
       submitBtn.disabled = true;
 
       try {
-        // Simulate API call with timeout
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Mock response for demonstration
-        const mockCrops = ['Wheat', 'Rice', 'Maize', 'Bajra', 'Cotton'];
-        const randomCrop = mockCrops[Math.floor(Math.random() * mockCrops.length)];
-        
-        const resultDiv = document.getElementById('result');
-        document.getElementById('recommendedCrop').textContent = randomCrop;
-        
-        // Set mock details based on crop
-        if (randomCrop === 'Wheat') {
-          document.getElementById('idealTemp').textContent = '20-25°C';
-          document.getElementById('waterNeeds').textContent = 'Moderate';
-          document.getElementById('growthPeriod').textContent = '3-4 months';
-        } else if (randomCrop === 'Rice') {
-          document.getElementById('idealTemp').textContent = '25-35°C';
-          document.getElementById('waterNeeds').textContent = 'High';
-          document.getElementById('growthPeriod').textContent = '5-6 months';
-        } else if (randomCrop === 'Maize') {
-          document.getElementById('idealTemp').textContent = '18-27°C';
-          document.getElementById('waterNeeds').textContent = 'Moderate';
-          document.getElementById('growthPeriod').textContent = '3-4 months';
-        } else if (randomCrop === 'Bajra') {
-          document.getElementById('idealTemp').textContent = '25-30°C';
-          document.getElementById('waterNeeds').textContent = 'Low';
-          document.getElementById('growthPeriod').textContent = '2.5-3 months';
-        } else {
-          document.getElementById('idealTemp').textContent = '25-35°C';
-          document.getElementById('waterNeeds').textContent = 'Moderate';
-          document.getElementById('growthPeriod').textContent = '5-6 months';
+        const response = await fetch('/predict-location', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          throw new Error('Server responded with an error');
         }
+
+        const result = await response.json();
         
-        resultDiv.style.display = 'block';
+        // Display the results
+        displayCropRecommendation(result);
         
       } catch (error) {
         console.error('Prediction error:', error);
@@ -902,7 +1081,99 @@
       }
     });
 
-    // 🌱 Crop Estimation Script
+    // Function to display crop recommendation results
+    function displayCropRecommendation(result) {
+      const resultDiv = document.getElementById('locationResult');
+      const recommendedCrop = document.getElementById('recommendedCrop');
+      
+      // Set recommended crop
+      recommendedCrop.textContent = result.recommended_crop;
+      
+      // Create pie chart
+      createSimilarityChart(result.top_crops);
+      
+      // Create crop ranking list
+      createCropRanking(result.top_crops);
+      
+      // Show result section
+      resultDiv.style.display = 'block';
+    }
+
+    // Function to create the similarity pie chart
+    function createSimilarityChart(crops) {
+      const ctx = document.getElementById('cropSimilarityChart').getContext('2d');
+      
+      // Prepare data for the chart
+      const labels = crops.map(crop => crop.crop);
+      const data = crops.map(crop => crop.similarity);
+      const backgroundColors = [
+        '#4caf50', '#ff9800', '#2196f3', '#f44336', '#9c27b0',
+        '#00bcd4', '#ffeb3b', '#795548', '#607d8b', '#8bc34a'
+      ];
+      
+      // Create the chart
+      if (window.cropChart) {
+        window.cropChart.destroy();
+      }
+      
+      window.cropChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: backgroundColors.slice(0, crops.length),
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `${context.label}: ${context.raw}% similarity`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Function to create the crop ranking list
+    function createCropRanking(crops) {
+      const rankingList = document.getElementById('cropRankingList');
+      rankingList.innerHTML = '';
+      
+      crops.forEach((crop, index) => {
+        const rankItem = document.createElement('div');
+        rankItem.className = 'crop-rank-item';
+        
+        rankItem.innerHTML = `
+          <div class="rank-number">${index + 1}</div>
+          <div class="crop-info">
+            <div class="crop-name">${crop.crop}</div>
+            <div class="similarity-bar">
+              <div class="similarity-fill" style="width: ${crop.similarity}%"></div>
+            </div>
+          </div>
+          <div class="similarity-value">${crop.similarity}%</div>
+        `;
+        
+        rankingList.appendChild(rankItem);
+      });
+    }
+
+    // Load states on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadStates();
+    });
+
+    // 🌱 Crop Estimation Script (UNCHANGED)
     document.getElementById('cropFormEstimation').addEventListener('submit', function(e) {
       e.preventDefault();
       const land = +document.getElementById('land').value;

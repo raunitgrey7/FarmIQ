@@ -5,29 +5,35 @@ from sklearn.model_selection import train_test_split
 import pickle
 import os
 
-# ✅ Load dataset safely
-DATA_PATH = "/backend/data/Crop_recommendation.csv"
-MODEL_DIR = "/backend/model"
+# ✅ Paths
+DATA_PATH = "backend/data/all_crops.parquet"   # merged dataset
+MODEL_DIR = "backend/model"
 
 if not os.path.exists(DATA_PATH):
-    raise FileNotFoundError(f"❌ CSV file not found at {DATA_PATH}")
+    raise FileNotFoundError(f"❌ Dataset not found at {DATA_PATH}")
 
-df = pd.read_csv(DATA_PATH)
+# ✅ Load dataset
+df = pd.read_parquet(DATA_PATH)
+print(f"✅ Loaded dataset: {df.shape}")
 
-# ✅ Split features and label
-X = df.drop('label', axis=1)
-y = df['label']
+# ✅ Feature / label split
+# Assumption: your dataset has columns ['N','P','K','temperature','humidity','ph','rainfall','label']
+feature_cols = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']
+label_col = 'label'
 
-# ✅ Train-test split and scale features
+X = df[feature_cols]
+y = df[label_col]
+
+# ✅ Train-test split & scaling
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 
-# ✅ Train Random Forest model
-model = RandomForestClassifier(n_estimators=100, random_state=42)
+# ✅ Train Random Forest
+model = RandomForestClassifier(n_estimators=200, random_state=42, n_jobs=-1)
 model.fit(X_train_scaled, y_train)
 
-# ✅ Create model folder and save model
+# ✅ Save model + scaler
 os.makedirs(MODEL_DIR, exist_ok=True)
 
 with open(os.path.join(MODEL_DIR, "crop_recommendation.pkl"), "wb") as f:
@@ -36,4 +42,4 @@ with open(os.path.join(MODEL_DIR, "crop_recommendation.pkl"), "wb") as f:
 with open(os.path.join(MODEL_DIR, "preprocessor.pkl"), "wb") as f:
     pickle.dump(scaler, f)
 
-print("✅ Model and Preprocessor saved successfully to 'backend/model/'")
+print("🎉 Model and Preprocessor saved successfully to 'backend/model/'")
