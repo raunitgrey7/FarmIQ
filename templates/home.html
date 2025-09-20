@@ -1,87 +1,568 @@
 {% extends "base.html" %}
 {% block content %}
 
-
 <body onload="showWelcomeScreen()">
 
-<!-- Welcome Screen -->
+<!-- Welcome Screen with enhanced animation -->
 <div id="welcome-screen" class="welcome-screen">
   <div class="welcome-content">
-    <h1 class="welcome-title">🌾 Welcome to <span style="color:#4CAF50">FarmIQ</span></h1>
-    <p class="welcome-sub">Your smart agricultural assistant</p>
-    <button onclick="hideWelcomeScreen()">Let's Go 🚀</button>
+    <div class="welcome-animation">
+      <div class="wheat-animation">🌾</div>
+      <div class="wheat-animation delay-1">🌾</div>
+      <div class="wheat-animation delay-2">🌾</div>
+    </div>
+    <h1 class="welcome-title animate-pop-in">🌾 Welcome to <span class="farmiq-green">FarmIQ</span></h1>
+    <p class="welcome-sub animate-pop-in delay-1">Your smart agricultural assistant</p>
+    <button class="welcome-btn animate-pop-in delay-2" onclick="hideWelcomeScreen()">Let's Grow 🚀</button>
   </div>
 </div>
 
 <!-- Main Content -->
 <div id="main-content" style="display: none;">
-    <!-- Your existing home page layout/buttons go here -->
+  <!-- Animated Background Elements -->
+  <div class="floating-leaves">
+    <div class="leaf">🍃</div>
+    <div class="leaf">🌱</div>
+    <div class="leaf">🍂</div>
+    <div class="leaf">🌿</div>
+  </div>
+
+  <!-- 🌟 Enhanced Hero Section with Parallax -->
+  <section class="hero-section">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Welcome to FarmIQ 🌾</h1>
+      <p class="hero-subtitle">
+        Your one-stop digital platform for smart farming — get crop suggestions, estimate profits, detect diseases, and more!
+      </p>
+      <div class="scroll-indicator">
+        <span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 💡 Enhanced Feature Section -->
+  <section class="features-section">
+    <div class="container">
+      <h2 class="section-title">🔍 Explore Our Features</h2>
+      
+      <div class="features-grid">
+        <a href="/crop" class="feature-card">
+          <div class="feature-icon">🌱</div>
+          <h3>Crop Prediction</h3>
+          <p>Get the best crop recommendation based on your land's conditions.</p>
+          <div class="feature-hover-effect"></div>
+        </a>
+
+        <a href="/soil" class="feature-card">
+          <div class="feature-icon">🌿</div>
+          <h3>Soil Type Detection</h3>
+          <p>Know your soil's composition and ideal crops.</p>
+          <div class="feature-hover-effect"></div>
+        </a>
+
+        <a href="/profit" class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Profit Estimation</h3>
+          <p>Enter your cost details and get estimated profit margin.</p>
+          <div class="feature-hover-effect"></div>
+        </a>
+
+        <a href="/yield" class="feature-card">
+          <div class="feature-icon">🌾</div>
+          <h3>Crop Yield by Land</h3>
+          <p>Estimate total yield based on crop and land size.</p>
+          <div class="feature-hover-effect"></div>
+        </a>
+
+        <a href="/problem" class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Crop Issue Reporting</h3>
+          <p>Raise problems like pests or poor yield and get suggestions.</p>
+          <div class="feature-hover-effect"></div>
+        </a>
+
+        <a href="/instructions" class="feature-card">
+          <div class="feature-icon">📘</div>
+          <h3>Farming Instructions</h3>
+          <p>Best practices for sowing, irrigation, fertilizing, and harvesting.</p>
+          <div class="feature-hover-effect"></div>
+        </a>
+      </div>
+    </div>
+  </section>
 </div>
 
-<!-- 🌟 Hero Section -->
-<section class="bg-green-700 text-white py-16 px-6 text-center rounded-2xl shadow-xl transition-all">
-  <h1 class="text-5xl font-extrabold mb-4">Welcome to FarmIQ 🌾</h1>
-  <p class="text-lg mb-8 max-w-2xl mx-auto">
-    Your one-stop digital platform for smart farming — get crop suggestions, estimate profits, detect diseases, and more!
-  </p><br>
+<style>
+  /* Welcome Screen Styles */
+  .welcome-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a2f1a 0%, #3a7d3a 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.8s ease-out;
+  }
   
-</section>
-
-<!-- 💡 Feature Section -->
-<section class="py-16 px-6 bg-gray-50 dark:bg-[#1f1f1f] transition">
-  <div class="feature-container">
-    <h2 class="feature-heading">🔍 Explore Our Features</h2>
-
-    <div class="feature-grid">
-
-    <a href="/crop" class="feature-card">
-        <h3>🌱 Crop Prediction</h3>
-        <p>Get the best crop recommendation based on your land's conditions.</p>
-    </a>
-
-    <a href="/soil" class="feature-card">
-        <h3>🌿 Soil Type Detection</h3>
-        <p>Know your soil's composition and ideal crops.</p>
-    </a>
-
-    <a href="/profit" class="feature-card">
-        <h3>📊 Profit Estimation</h3>
-        <p>Enter your cost details and get estimated profit margin.</p>
-    </a>
-
-    <a href="/yield" class="feature-card">
-        <h3>🌾 Crop Yield by Land</h3>
-        <p>Estimate total yield based on crop and land size.</p>
-    </a>
-
-    <a href="/problem" class="feature-card">
-        <h3>🎯 Crop Issue Reporting</h3>
-        <p>Raise problems like pests or poor yield and get suggestions.</p>
-    </a>
-
-    <a href="/instructions" class="feature-card">
-        <h3>📘 Farming Instructions</h3>
-        <p>Best practices for sowing, irrigation, fertilizing, and harvesting.</p>
-    </a>
-
-</div>
-
-</div>
-</section>
+  .welcome-content {
+    text-align: center;
+    color: white;
+    position: relative;
+  }
+  
+  .welcome-animation {
+    position: relative;
+    height: 100px;
+    margin-bottom: 2rem;
+  }
+  
+  .wheat-animation {
+    position: absolute;
+    font-size: 3rem;
+    opacity: 0;
+    animation: growWheat 2s forwards;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .delay-1 { animation-delay: 0.5s; }
+  .delay-2 { animation-delay: 1s; }
+  
+  .welcome-title {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    opacity: 0;
+  }
+  
+  .welcome-sub {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    opacity: 0;
+  }
+  
+  .welcome-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    opacity: 0;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  }
+  
+  .welcome-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.6);
+  }
+  
+  .farmiq-green {
+    color: #4CAF50;
+  }
+  
+  /* Animations */
+  @keyframes growWheat {
+    0% { transform: translate(-50%, 20px) scale(0.8); opacity: 0; }
+    100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+  }
+  
+  .animate-pop-in {
+    animation: popIn 0.8s forwards;
+  }
+  
+  .animate-pop-in.delay-1 {
+    animation-delay: 0.5s;
+  }
+  
+  .animate-pop-in.delay-2 {
+    animation-delay: 1s;
+  }
+  
+  @keyframes popIn {
+    0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  
+  /* Floating leaves animation */
+  .floating-leaves {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+  }
+  
+  .leaf {
+    position: absolute;
+    font-size: 24px;
+    opacity: 0.3;
+    animation: float 15s infinite linear;
+  }
+  
+  .leaf:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 17s; }
+  .leaf:nth-child(2) { left: 20%; animation-delay: 2s; animation-duration: 20s; }
+  .leaf:nth-child(3) { left: 70%; animation-delay: 4s; animation-duration: 15s; }
+  .leaf:nth-child(4) { left: 80%; animation-delay: 6s; animation-duration: 18s; }
+  
+  @keyframes float {
+    0% { transform: translateY(100vh) rotate(0deg); }
+    100% { transform: translateY(-100px) rotate(360deg); }
+  }
+  
+  /* Hero Section */
+  .hero-section {
+    position: relative;
+    padding: 8rem 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+    color: white;
+    overflow: hidden;
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 4rem;
+  }
+  
+  .hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.2;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%234CAF50' fill-opacity='0.2' d='M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,213.3C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+    background-size: cover;
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  
+  .hero-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+    line-height: 1.6;
+  }
+  
+  /* Scroll indicator */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .scroll-indicator span {
+    display: block;
+    width: 6px;
+    height: 10px;
+    background: white;
+    border-radius: 3px;
+    margin-top: 10px;
+    animation: scroll 2s infinite;
+  }
+  
+  @keyframes scroll {
+    0% { opacity: 0; transform: translateY(0); }
+    50% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(15px); }
+  }
+  
+  /* Features Section */
+  .features-section {
+    padding: 4rem 2rem;
+    background: #f8f9fa;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: #2e7d32;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: #4CAF50;
+    border-radius: 2px;
+  }
+  
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  
+  .feature-card {
+    position: relative;
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    color: #333;
+    text-decoration: none;
+    z-index: 1;
+    border: 1px solid rgba(76, 175, 80, 0.1);
+  }
+  
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+    transition: height 0.5s ease;
+    z-index: -1;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-10px);
+    color: white;
+    box-shadow: 0 15px 35px rgba(46, 125, 50, 0.2);
+  }
+  
+  .feature-card:hover::before {
+    height: 100%;
+  }
+  
+  .feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    filter: grayscale(0.8) brightness(0.9);
+  }
+  
+  .feature-card:hover .feature-icon {
+    transform: scale(1.2);
+    filter: grayscale(0) brightness(1.2);
+  }
+  
+  .feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    color: #2E7D32;
+  }
+  
+  .feature-card:hover h3 {
+    color: white;
+  }
+  
+  .feature-card p {
+    opacity: 0.8;
+    line-height: 1.6;
+    transition: all 0.3s ease;
+    color: #555;
+  }
+  
+  .feature-card:hover p {
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .feature-hover-effect {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: radial-gradient(circle at center, transparent 30%, rgba(76, 175, 80, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .feature-card:hover .feature-hover-effect {
+    opacity: 1;
+  }
+  
+  /* Light theme improvements for dropdowns */
+  .light-theme-dropdown {
+    background-color: white;
+    color: #333;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .light-theme-dropdown option {
+    background-color: white;
+    color: #333;
+    padding: 10px;
+  }
+  
+  .light-theme-dropdown:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  }
+  
+  /* Performance optimizations */
+  .will-change {
+    will-change: transform, opacity;
+  }
+  
+  /* Reduced motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    
+    .floating-leaves,
+    .scroll-indicator {
+      display: none;
+    }
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .features-section {
+      background: #1a1a1a;
+    }
+    
+    .feature-card {
+      background: #2d2d2d;
+      color: white;
+      border-color: #444;
+    }
+    
+    .feature-card h3 {
+      color: #4CAF50;
+    }
+    
+    .feature-card p {
+      color: #ccc;
+    }
+  }
+</style>
 
 <script>
-    function showWelcomeScreen() {
-        document.getElementById("main-content").style.display = "none";
-        document.getElementById("welcome-screen").style.display = "flex";
-    }
+  // Performance optimization - only run animations when needed
+  let reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  
+  function showWelcomeScreen() {
+    document.getElementById("main-content").style.display = "none";
+    document.getElementById("welcome-screen").style.display = "flex";
+  }
 
-    function hideWelcomeScreen() {
-        document.getElementById("welcome-screen").style.display = "none";
-        document.getElementById("main-content").style.display = "block";
+  function hideWelcomeScreen() {
+    document.getElementById("welcome-screen").style.opacity = "0";
+    setTimeout(() => {
+      document.getElementById("welcome-screen").style.display = "none";
+      document.getElementById("main-content").style.display = "block";
+      
+      if (!reducedMotion) {
+        // Animate in the main content
+        document.querySelectorAll('.hero-title, .hero-subtitle, .feature-card').forEach(el => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(20px)';
+        });
+        
+        // Trigger animations with slight delay for better visual effect
+        setTimeout(() => {
+          document.querySelector('.hero-title').style.transition = 'opacity 1s ease, transform 1s ease';
+          document.querySelector('.hero-title').style.opacity = '1';
+          document.querySelector('.hero-title').style.transform = 'translateY(0)';
+          
+          document.querySelector('.hero-subtitle').style.transition = 'opacity 1s ease 0.3s, transform 1s ease 0.3s';
+          document.querySelector('.hero-subtitle').style.opacity = '1';
+          document.querySelector('.hero-subtitle').style.transform = 'translateY(0)';
+          
+          document.querySelectorAll('.feature-card').forEach((card, index) => {
+            card.style.transition = `opacity 0.8s ease ${0.5 + index * 0.1}s, transform 0.8s ease ${0.5 + index * 0.1}s`;
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          });
+        }, 100);
+      }
+    }, 800);
+  }
+
+  // Simple parallax effect with performance optimization
+  let lastScrollY = 0;
+  let ticking = false;
+  
+  function updateParallax() {
+    const scrolled = window.pageYOffset;
+    const parallax = document.querySelector('.hero-bg');
+    if (parallax) {
+      parallax.style.transform = `translateY(${scrolled * 0.4}px)`;
     }
+    ticking = false;
+  }
+  
+  function onScroll() {
+    lastScrollY = window.scrollY;
+    if (!ticking) {
+      requestAnimationFrame(updateParallax);
+      ticking = true;
+    }
+  }
+  
+  if (!reducedMotion) {
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  // Initialize with performance in mind
+  document.addEventListener('DOMContentLoaded', function() {
+    // Use requestAnimationFrame for smoother animations
+    requestAnimationFrame(() => {
+      // Preload any heavy resources if needed
+    });
+    
+    // Add will-change property to elements that will be animated
+    const animatedElements = document.querySelectorAll('.feature-card, .hero-title, .hero-subtitle');
+    animatedElements.forEach(el => {
+      el.classList.add('will-change');
+    });
+  });
 </script>
 
 <br>
-
 
 {% endblock %}

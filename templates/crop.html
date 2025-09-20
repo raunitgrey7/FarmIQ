@@ -649,6 +649,97 @@
       min-width: 50px;
       text-align: right;
     }
+
+    /* NEW STYLES FOR ENHANCED CROP ESTIMATION */
+    .crop-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .crop-detail-card {
+      background: var(--primary-light);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .crop-detail-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-header i {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+      margin-right: 0.8rem;
+    }
+
+    .detail-header h4 {
+      color: var(--text-color);
+      font-size: 1.1rem;
+    }
+
+    .detail-content {
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    .detail-content strong {
+      color: var(--text-color);
+      font-weight: 600;
+    }
+
+    .detail-badge {
+      display: inline-block;
+      background: var(--primary-color);
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    .month-indicator {
+      display: flex;
+      gap: 0.3rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .month-pill {
+      background: var(--primary-color);
+      color: white;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+    }
+
+    .fertilizer-list {
+      margin-top: 0.5rem;
+    }
+
+    .fertilizer-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.3rem 0;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .fertilizer-item:last-child {
+      border-bottom: none;
+    }
   </style>
 </head>
 <body>
@@ -762,7 +853,7 @@
       </div>
     </div>
 
-    <!-- 🌱 Crop Estimation Based on Land (UNCHANGED) -->
+    <!-- 🌱 Crop Estimation Based on Land (UPDATED) -->
     <div class="form-container">
       <h2 class="heading">📊 Crop Estimation Based on Land</h2>
       <p class="info-text">
@@ -778,13 +869,45 @@
           <div class="input-group">
             <label for="cropSelect"><i class="fas fa-list"></i> Select Crop</label>
             <select id="cropSelect" required>
-              <option value="">--Choose Crop--</option>
               <option value="wheat">Wheat</option>
-              <option value="rice">Rice</option>
               <option value="bajra">Bajra</option>
-              <option value="maize">Maize</option>
+              <option value="rice">Rice</option>
               <option value="cotton">Cotton</option>
               <option value="sugarcane">Sugarcane</option>
+              <option value="barley">Barley</option>
+              <option value="brinjal">Brinjal</option>
+              <option value="cabbage">Cabbage</option>
+              <option value="cauliflower">Cauliflower</option>
+              <option value="carrot">Carrot</option>
+              <option value="chillies">Chillies</option>
+              <option value="gram">Gram</option>
+              <option value="groundnut">Groundnut</option>
+              <option value="jute">Jute</option>
+              <option value="lentil">Lentil</option>
+              <option value="mustard">Mustard</option>
+              <option value="oilseeds">Oilseeds</option>
+              <option value="okra">Okra</option>
+              <option value="onion">Onion</option>
+              <option value="pea">Pea</option>
+              <option value="potato">Potato</option>
+              <option value="pulses">Pulses</option>
+              <option value="rapeseed">Rapeseed</option>
+              <option value="sesame">Sesame</option>
+              <option value="soybean">Soybean</option>
+              <option value="spinach">Spinach</option>
+              <option value="sunflower">Sunflower</option>
+              <option value="tomato">Tomato</option>
+              <option value="turmeric">Turmeric</option>
+              <option value="apple">Apple</option>
+              <option value="orange">Orange</option>
+              <option value="banana">Banana</option>
+              <option value="mango">Mango</option>
+              <option value="grapes">Grapes</option>
+              <option value="papaya">Papaya</option>
+              <option value="coconut">Coconut</option>
+              <option value="kidneybeans">Kidneybeans</option>
+              <option value="maize">Maize</option>
+              
             </select>
           </div>
         </div>
@@ -797,41 +920,127 @@
       <div id="cropEstimationResult" class="result-box">
         <h3><i class="fas fa-clipboard-list"></i> Crop Plan Details</h3>
         
-        <div class="crop-cards">
-          <div class="crop-card">
-            <div class="crop-card-header">
-              <h3 id="cropName">Crop Name</h3>
+        <div class="crop-detail-grid">
+          <!-- Name -->
+          <div class="crop-detail-card">
+            <div class="detail-header">
+              <i class="fas fa-seedling"></i>
+              <h4>Crop Name</h4>
             </div>
-            <div class="crop-card-body">
-              <p id="cropDescription">Crop description will appear here.</p>
-              
-              <div class="crop-card-details">
-                <div class="crop-card-detail">
-                  <i class="fas fa-money-bill-wave"></i>
-                  <span>Total Cost</span>
-                  <strong>₹<span id="cropCost">0</span></strong>
-                </div>
-                <div class="crop-card-detail">
-                  <i class="fas fa-clock"></i>
-                  <span>Harvest Time</span>
-                  <strong><span id="cropTime">0</span> months</strong>
-                </div>
-                <div class="crop-card-detail">
-                  <i class="fas fa-weight-hanging"></i>
-                  <span>Expected Yield</span>
-                  <strong><span id="cropYield">0</span> tons</strong>
-                </div>
-                <div class="crop-card-detail">
-                  <i class="fas fa-box"></i>
-                  <span>Fertilizer Needed</span>
-                  <strong><span id="fertilizerNeeded">0</span> bags</strong>
-                </div>
-              </div>
-              
-              <div class="input-group" style="margin-top: 1.5rem;">
-                <label for="cropResources"><i class="fas fa-tools"></i> Resources Required</label>
-                <p id="cropResources">Resources will appear here.</p>
-              </div>
+            <div class="detail-content" id="cropNameDetail">
+              Select a crop to see details
+            </div>
+          </div>
+          
+          <!-- Cost -->
+          <div class="crop-detail-card">
+            <div class="detail-header">
+              <i class="fas fa-money-bill-wave"></i>
+              <h4>Cost Estimation</h4>
+            </div>
+            <div class="detail-content">
+              <strong>₹<span id="cropCostDetail">0</span></strong> total for <span id="landSize">0</span> acres
+              <div class="detail-badge">₹<span id="costPerAcre">0</span> per acre</div>
+            </div>
+          </div>
+          
+          <!-- Time -->
+          <div class="crop-detail-card">
+            <div class="detail-header">
+              <i class="fas fa-clock"></i>
+              <h4>Growth Period</h4>
+            </div>
+            <div class="detail-content">
+              <strong><span id="cropTimeDetail">0</span> months</strong> from sowing to harvest
+            </div>
+          </div>
+          
+          <!-- Seed -->
+          <div class="crop-detail-card">
+            <div class="detail-header">
+              <i class="fas fa-seedling"></i>
+              <h4>Seed Requirements</h4>
+            </div>
+            <div class="detail-content" id="seedRequirements">
+              Select a crop to see details
+            </div>
+          </div>
+          
+          <!-- Irrigation -->
+          <div class="crop-detail-card">
+            <div class="detail-header">
+              <i class="fas fa-tint"></i>
+              <h4>Irrigation Needs</h4>
+            </div>
+            <div class="detail-content" id="irrigationNeeds">
+              Select a crop to see details
+            </div>
+          </div>
+          
+          <!-- Fertilizer -->
+          <div class="crop-detail-card">
+            <div class="detail-header">
+              <i class="fas fa-prescription-bottle"></i>
+              <h4>Fertilizer Requirements</h4>
+            </div>
+            <div class="detail-content" id="fertilizerRequirements">
+              Select a crop to see details
+            </div>
+          </div>
+          
+          <!-- Pesticide -->
+          <div class="crop-detail-card">
+            <div class="detail-header">
+              <i class="fas fa-bug"></i>
+              <h4>Pesticide Information</h4>
+            </div>
+            <div class="detail-content" id="pesticideInfo">
+              Select a crop to see details
+            </div>
+          </div>
+          
+          <!-- Yield -->
+          <div class="crop-detail-card">
+            <div class="detail-header">
+              <i class="fas fa-weight-hanging"></i>
+              <h4>Expected Yield</h4>
+            </div>
+            <div class="detail-content">
+              <strong><span id="cropYieldDetail">0</span> tons</strong> total for <span id="landSize2">0</span> acres
+              <div class="detail-badge"><span id="yieldPerAcre">0</span> tons per acre</div>
+            </div>
+          </div>
+          
+          <!-- Sowing Month -->
+          <div class="crop-detail-card">
+            <div class="detail-header">
+              <i class="fas fa-calendar-alt"></i>
+              <h4>Sowing Season</h4>
+            </div>
+            <div class="detail-content" id="sowingSeason">
+              Select a crop to see details
+            </div>
+          </div>
+          
+          <!-- Harvest Month -->
+          <div class="crop-detail-card">
+            <div class="detail-header">
+              <i class="fas fa-calendar-check"></i>
+              <h4>Harvest Season</h4>
+            </div>
+            <div class="detail-content" id="harvestSeason">
+              Select a crop to see details
+            </div>
+          </div>
+          
+          <!-- Description -->
+          <div class="crop-detail-card" style="grid-column: 1 / -1;">
+            <div class="detail-header">
+              <i class="fas fa-info-circle"></i>
+              <h4>Crop Description</h4>
+            </div>
+            <div class="detail-content" id="cropDescription">
+              Select a crop to see details
             </div>
           </div>
         </div>
@@ -1055,11 +1264,10 @@
 
       try {
         const response = await fetch('/predict-location', {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(data)   // use the `data` object we already built
-});
-
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
 
         if (!response.ok) {
           throw new Error('Server responded with an error');
@@ -1172,78 +1380,472 @@
       loadStates();
     });
 
-    // 🌱 Crop Estimation Script (UNCHANGED)
+    // 🌱 Crop Estimation Script (UPDATED)
     document.getElementById('cropFormEstimation').addEventListener('submit', function(e) {
       e.preventDefault();
       const land = +document.getElementById('land').value;
       const crop = document.getElementById('cropSelect').value;
 
       const cropData = {
-        wheat: {
-          name: "Wheat",
-          costPerAcre: 8000,
-          time: 4,
-          resources: "50 kg seed, 2 bags urea, moderate water",
-          yieldPerAcre: 2.8,
-          fertilizerPerAcre: 2,
-          description: "Wheat is a rabi crop best grown in cool, dry climates. It requires well-drained loamy soil and is a staple food grain."
+        "wheat": {
+          "name": "Wheat",
+          "costPerAcre": 8000,
+          "time": 4,
+          "seed": "50 kg certified seed per acre",
+          "irrigation": "4–5 irrigations: CRI, tillering, jointing, booting/grain fill as per water availability",
+          "fertilizers": { "urea": "2 bags", "dap": "1 bag", "mop": "1 bag", "other": "" },
+          "pesticides": "Rusts and aphids; resistant varieties, timely fungicide and insecticide application as needed",
+          "yieldPerAcre": 2.8,
+          "sowingMonths": "Rabi (Oct–Dec depending on zone)",
+          "harvestMonths": "Mar–Apr",
+          "description": "Staple rabi cereal preferring well-drained loamy soils and cool dry season for best yields."
         },
-        rice: {
-          name: "Rice",
-          costPerAcre: 10000,
-          time: 5,
-          resources: "High water, 3 bags fertilizer, pesticides",
-          yieldPerAcre: 3.5,
-          fertilizerPerAcre: 3,
-          description: "Rice is a kharif crop that thrives in warm, humid weather. It needs standing water and rich, clayey soil."
+        "bajra": {
+          "name": "Bajra (Pearl Millet)",
+          "costPerAcre": 6000,
+          "time": 3,
+          "seed": "4–6 kg hybrid seed per acre",
+          "irrigation": "Drought-tolerant; 1–2 light irrigations depending on rainfall; more at flowering for grain fill",
+          "fertilizers": { "urea": "1 bag", "dap": "0.5 bag", "mop": "0.5 bag", "other": "Apply FYM/compost where available" },
+          "pesticides": "Monitor for stem borer, midge; use pheromone traps/appropriate insecticides and biocontrols",
+          "yieldPerAcre": 1.2,
+          "sowingMonths": "Kharif (June–July)",
+          "harvestMonths": "Sep–Oct",
+          "description": "Hardy millet for arid and semi-arid regions. Prefers well-drained soils, low water, high heat tolerance; used for grain and fodder."
         },
-        bajra: {
-          name: "Bajra",
-          costPerAcre: 6000,
-          time: 3,
-          resources: "30 kg seed, dry soil, low water",
-          yieldPerAcre: 1.2,
-          fertilizerPerAcre: 1.5,
-          description: "Bajra is a drought-resistant millet suitable for dry areas. It matures quickly and is rich in nutrients."
+        "rice": {
+          "name": "Rice",
+          "costPerAcre": 12000,
+          "time": 4.5,
+          "seed": "25–30 kg seed per acre (transplanted or direct-seeded)",
+          "irrigation": "High — standing water 5–10 cm for much of crop until grain filling in traditional systems; AWD in water-scarce areas",
+          "fertilizers": { "urea": "3 bags (split application)", "dap": "1–2 bags", "mop": "1 bag", "other": "Zinc often applied as basal if deficient" },
+          "pesticides": "Stem borer, leaf blast, sheath blight; fungicides, insecticides and resistant varieties used",
+          "yieldPerAcre": 3.5,
+          "sowingMonths": "Kharif (Jun–Jul), some rabi rice in irrigated areas",
+          "harvestMonths": "Oct–Nov (for Kharif)",
+          "description": "High water-demand cereal for flooded/irrigated conditions; clayey to loamy soils with standing water perform best."
         },
-        maize: {
-          name: "Maize",
-          costPerAcre: 7500,
-          time: 4,
-          resources: "40 kg seed, moderate water, fertilizer",
-          yieldPerAcre: 2.5,
-          fertilizerPerAcre: 2.5,
-          description: "Maize is a flexible crop for multiple seasons. Grows well in loamy soil and used for food and fodder."
+        "cotton": {
+          "name": "Cotton",
+          "costPerAcre": 15000,
+          "time": 6,
+          "seed": "2–2.5 kg hybrid seed per acre",
+          "irrigation": "About 6–8 irrigations depending on rainfall; avoid waterlogging",
+          "fertilizers": { "urea": "3 bags", "dap": "1 bag", "mop": "1 bag", "other": "Apply balanced NPK; gypsum where Ca deficiency seen" },
+          "pesticides": "Bollworm, whitefly, aphids; use Bt hybrids where allowed, timely IPM including traps and selective pesticides",
+          "yieldPerAcre": 1.2,
+          "sowingMonths": "Kharif (Apr–Jun depending on zone)",
+          "harvestMonths": "Oct–Dec",
+          "description": "Fiber crop grown well on black cotton soils; long-season crop sensitive to pests and moisture extremes."
         },
-        cotton: {
-          name: "Cotton",
-          costPerAcre: 12000,
-          time: 6,
-          resources: "Pesticides, irrigation, well-drained soil",
-          yieldPerAcre: 1.8,
-          fertilizerPerAcre: 3.5,
-          description: "Cotton is a kharif crop that requires warm climate and well-drained soil. It's a cash crop with high market value."
+        "sugarcane": {
+          "name": "Sugarcane",
+          "costPerAcre": 35000,
+          "time": 12,
+          "seed": "Setts planted — ~2.5–3.0 tonnes setts per acre",
+          "irrigation": "High water requirement; frequent irrigation, particularly early growth and ripening",
+          "fertilizers": { "urea": "6–8 bags (split)", "dap": "2–3 bags", "mop": "2 bags", "other": "Apply gypsum and micronutrients as per soil test" },
+          "pesticides": "Top borer, white grub, rust; integrated management and routine monitoring necessary",
+          "yieldPerAcre": 40.0,
+          "sowingMonths": "Planting varies by region (typically Feb–Apr or Oct–Dec)",
+          "harvestMonths": "10–14 months after planting (harvest season depends on variety)",
+          "description": "Long-duration cash crop needing fertile, deep soils and abundant water; high input and labour crop but high returns."
         },
-        sugarcane: {
-          name: "Sugarcane",
-          costPerAcre: 15000,
-          time: 10,
-          resources: "High water, rich soil, fertilizers",
-          yieldPerAcre: 40,
-          fertilizerPerAcre: 4,
-          description: "Sugarcane is a tropical crop that requires year-round warm weather and ample water. It has a long growth period."
+        "barley": {
+          "name": "Barley",
+          "costPerAcre": 7000,
+          "time": 3.5,
+          "seed": "40–50 kg seed per acre",
+          "irrigation": "Moderate — 2–3 irrigations during critical growth stages",
+          "fertilizers": { "urea": "1.5 bags", "dap": "1 bag", "mop": "0.5 bag", "other": "" },
+          "pesticides": "Watch for powdery mildew and aphids; fungicides and insecticidal sprays as needed",
+          "yieldPerAcre": 2.0,
+          "sowingMonths": "Rabi (Oct–Dec)",
+          "harvestMonths": "Mar–Apr",
+          "description": "Cool-season cereal grown for grain and malt. Prefers loamy soils and cool, dry climate; shorter season than wheat."
+        },
+        "brinjal": {
+          "name": "Brinjal (Eggplant)",
+          "costPerAcre": 22000,
+          "time": 4.5,
+          "seed": "4–5 g seed for nursery (transplanting) per acre seedling requirement ~2000–2500 seedlings",
+          "irrigation": "Regular irrigation; 7–10 day intervals; more frequent in hot weather",
+          "fertilizers": { "urea": "2 bags", "dap": "1 bag", "mop": "0.5 bag", "other": "Basal FYM and micronutrients (Zn, B) as required" },
+          "pesticides": "Frequent pests: fruit borer, aphids, thrips; use pheromone traps, Bt for borers, neem/chemical insecticides; manage early blight with fungicides",
+          "yieldPerAcre": 8.0,
+          "sowingMonths": "Kharif/Rabi depending on region (transplanting Nov–Feb or Jun–Jul)",
+          "harvestMonths": "2–3 months after transplanting, continuous harvest for months",
+          "description": "High-value solanaceous vegetable needing fertile loamy soil with good drainage, warm days and moderate nights."
+        },
+        "cabbage": {
+          "name": "Cabbage",
+          "costPerAcre": 18000,
+          "time": 3,
+          "seed": "1–1.5 g seed for nursery; transplanting density ~2500–3000 seedlings per acre",
+          "irrigation": "Regular, keep soil moist; 7–10 day intervals",
+          "fertilizers": { "urea": "2 bags", "dap": "1 bag", "mop": "1 bag", "other": "Apply compost/FYM; Ca and micronutrients if deficiency noted" },
+          "pesticides": "Caterpillars, aphids, leaf miners; use BT/chemical insecticides, row covers for young plants",
+          "yieldPerAcre": 10.0,
+          "sowingMonths": "Rabi (Oct–Feb) or as cool-season crop",
+          "harvestMonths": "Jan–Mar (approx. 70–90 days post transplant)",
+          "description": "Cool-season cole crop; fertile loamy soils with good moisture retention produce best heads for market."
+        },
+        "cauliflower": {
+          "name": "Cauliflower",
+          "costPerAcre": 20000,
+          "time": 3.5,
+          "seed": "1–1.5 g seed for nursery; ~2500–3000 seedlings per acre",
+          "irrigation": "Regular moisture required; avoid water stress especially at curd initiation",
+          "fertilizers": { "urea": "2.5 bags", "dap": "1 bag", "mop": "1 bag", "other": "Apply basal compost; Ca applications if tip-burn risk" },
+          "pesticides": "Caterpillars, aphids; monitor for white rust and downy mildew; fungicides/biocontrols as needed",
+          "yieldPerAcre": 6.0,
+          "sowingMonths": "Rabi (Oct–Dec)",
+          "harvestMonths": "Dec–Mar (approx. 80–120 days)",
+          "description": "High-value cool-season vegetable requiring fertile, well-watered soils; sensitive to heat and moisture stress."
+        },
+        "carrot": {
+          "name": "Carrot",
+          "costPerAcre": 14000,
+          "time": 3,
+          "seed": "2–3 kg seed per acre (direct sowing)",
+          "irrigation": "Frequent light irrigations to keep topsoil moist for root formation",
+          "fertilizers": { "urea": "1 bag", "dap": "1 bag", "mop": "0.5 bag", "other": "Well-rotted FYM to improve soil tilth" },
+          "pesticides": "Root fly, aphids; use cultural control, timely insecticide sprays if necessary",
+          "yieldPerAcre": 10.0,
+          "sowingMonths": "Rabi (Oct–Feb)",
+          "harvestMonths": "Jan–Apr (90–120 days)",
+          "description": "Root vegetable preferring sandy loam, deep soil for straight roots; cool season gives best quality."
+        },
+        "chillies": {
+          "name": "Chillies",
+          "costPerAcre": 20000,
+          "time": 4.5,
+          "seed": "300–400 g hybrid/varietal seed (nursery transplanting ~2000–2500 seedlings/acre)",
+          "irrigation": "Regular irrigation, 7–10 day intervals; avoid waterlogging",
+          "fertilizers": { "urea": "2 bags", "dap": "1 bag", "mop": "1 bag", "other": "Top dress N during fruiting as split doses" },
+          "pesticides": "Thrips, bollworms, fruit rot; integrated pest management (IPM) with neem, traps, selective insecticides",
+          "yieldPerAcre": 3.0,
+          "sowingMonths": "Kharif or Rabi (nursery then transplant)",
+          "harvestMonths": "90–150 days after transplanting, multiple picks",
+          "description": "High value spice/vegetable crop; needs fertile, well-drained soils and warm conditions for pungency and yield."
+        },
+        "gram": {
+          "name": "Gram (Chana)",
+          "costPerAcre": 7000,
+          "time": 4,
+          "seed": "60–80 kg seed per acre (depends on variety)",
+          "irrigation": "Low to moderate; 2–3 irrigations (flowering and pod filling critical)",
+          "fertilizers": { "urea": "0.5 bag", "dap": "0.5 bag", "mop": "0.25 bag", "other": "Rhizobium inoculation recommended" },
+          "pesticides": "Helicoverpa, pod borer; use pheromone traps, biopesticides or selective chemicals",
+          "yieldPerAcre": 1.0,
+          "sowingMonths": "Rabi (Oct–Dec)",
+          "harvestMonths": "Feb–Apr",
+          "description": "Cool-season pulse that tolerates marginal soils; improves soil N through fixation when inoculated."
+        },
+        "groundnut": {
+          "name": "Groundnut (Peanut)",
+          "costPerAcre": 10000,
+          "time": 3.5,
+          "seed": "100–120 kg seed (pods) per acre",
+          "irrigation": "Moderate; 3–4 irrigations, avoid waterlogging during pegging",
+          "fertilizers": { "urea": "0.5 bag", "dap": "1 bag", "mop": "0.5 bag", "other": "Rhizobium inoculant, gypsum as needed" },
+          "pesticides": "Leaf miner, aphids, pod rot; use cultural controls and fungicides/insecticides when needed",
+          "yieldPerAcre": 2.0,
+          "sowingMonths": "Kharif (May–Jul)",
+          "harvestMonths": "Sep–Nov (100–120 days)",
+          "description": "Oilseed legume preferring sandy loam soils with good drainage; fixes nitrogen and is sensitive to waterlogging."
+        },
+        "jute": {
+          "name": "Jute",
+          "costPerAcre": 9000,
+          "time": 3,
+          "seed": "2–3 kg seed per acre",
+          "irrigation": "High moisture requirement; grown on moist, alluvial soils; continuous moisture helpful",
+          "fertilizers": { "urea": "1 bag", "dap": "1 bag", "mop": "0.5 bag", "other": "" },
+          "pesticides": "Minor pests; watch for stem rot and nematodes; fungicide seed treatment recommended",
+          "yieldPerAcre": 4.0,
+          "sowingMonths": "Kharif (May–Jul)",
+          "harvestMonths": "Aug–Sep",
+          "description": "Fiber crop for bast fibre; thrives in warm humid climate with good soil moisture and alluvial soils."
+        },
+        "lentil": {
+          "name": "Lentil",
+          "costPerAcre": 6500,
+          "time": 3,
+          "seed": "30–40 kg seed per acre",
+          "irrigation": "Low; usually rainfed or 1 irrigation at pod fill if needed",
+          "fertilizers": { "urea": "0.25 bag", "dap": "0.25 bag", "mop": "0.25 bag", "other": "Rhizobium inoculation recommended" },
+          "pesticides": "Aphids and fungal diseases; use resistant varieties, timely fungicides/insecticides",
+          "yieldPerAcre": 0.8,
+          "sowingMonths": "Rabi (Oct–Dec)",
+          "harvestMonths": "Feb–Mar",
+          "description": "Short-duration pulse suited to cool, dry climates; improves soil N through fixation and needs light soils."
+        },
+        "mustard": {
+          "name": "Mustard (Rapeseed-Mustard family)",
+          "costPerAcre": 8000,
+          "time": 3.5,
+          "seed": "6–8 kg seed per acre",
+          "irrigation": "Low to moderate; 1–2 irrigations (critical at flowering and pod fill)",
+          "fertilizers": { "urea": "1 bag", "dap": "1 bag", "mop": "0.5 bag", "other": "Sulphur often beneficial (elemental or gypsum)" },
+          "pesticides": "Aphids, mustard sawfly, white rust; use resistant varieties and timely sprays",
+          "yieldPerAcre": 1.0,
+          "sowingMonths": "Rabi (Oct–Nov)",
+          "harvestMonths": "Feb–Mar",
+          "description": "Oilseed crop preferring well-drained loam soils and cool climate during vegetative growth."
+        },
+        "oilseeds": {
+          "name": "Mixed Oilseeds (general entry)",
+          "costPerAcre": 9000,
+          "time": 3.5,
+          "seed": "Varies by crop (sunflower/rapeseed/soybean) — follow crop-specific guidelines",
+          "irrigation": "Varies; generally low to moderate",
+          "fertilizers": { "urea": "Varies", "dap": "Varies", "mop": "Varies", "other": "Crop-specific recommendations" },
+          "pesticides": "Varies by crop (aphids, borers, fungal diseases common) — IPM advised",
+          "yieldPerAcre": "Varies",
+          "sowingMonths": "Varies",
+          "harvestMonths": "Varies",
+          "description": "Generic placeholder for other oilseeds; better to use crop-specific entries (sunflower/soybean/mustard)."
+        },
+        "okra": {
+          "name": "Okra (Bhindi)",
+          "costPerAcre": 12000,
+          "time": 3,
+          "seed": "1–2 kg seed per acre (direct sowing or transplanting)",
+          "irrigation": "Regular; weekly irrigation in dry spells; drainage important",
+          "fertilizers": { "urea": "1.5 bags", "dap": "0.5 bag", "mop": "0.5 bag", "other": "Apply compost; top dress N during picking" },
+          "pesticides": "Aphids, jassids, fruit borers; neem, sticky traps, and targeted insecticides useful",
+          "yieldPerAcre": 6.0,
+          "sowingMonths": "Kharif (Mar–Jun depending on region)",
+          "harvestMonths": "Continuous after ~50–60 days, multiple pickings",
+          "description": "Heat-loving vegetable; prefers well-drained loamy soils and regular harvesting for continuous yield."
+        },
+        "onion": {
+          "name": "Onion",
+          "costPerAcre": 22000,
+          "time": 4,
+          "seed": "5–8 kg seed for sets or 8–10 kg for direct sowing per acre depending on system",
+          "irrigation": "Frequent shallow irrigations to maintain bulb development; avoid waterlogging",
+          "fertilizers": { "urea": "2.5 bags", "dap": "1 bag", "mop": "1 bag", "other": "Apply boron if deficiency; FYM recommended" },
+          "pesticides": "Thrips, purple blotch; integrated management with insecticides and fungicides as needed",
+          "yieldPerAcre": 10.0,
+          "sowingMonths": "Rabi (Oct–Dec) or Kharif (varies by region)",
+          "harvestMonths": "Feb–May or as per season",
+          "description": "High-value bulb crop needing fertile, well-drained soils and careful irrigation scheduling for bulb size and storage quality."
+        },
+        "pea": {
+          "name": "Pea",
+          "costPerAcre": 9000,
+          "time": 2.5,
+          "seed": "40–60 kg seed per acre (varies by type)",
+          "irrigation": "Moderate; 2–3 irrigations; keep soil moist for good pod set",
+          "fertilizers": { "urea": "0.5 bag", "dap": "0.5 bag", "mop": "0.25 bag", "other": "Rhizobium inoculation improves N supply" },
+          "pesticides": "Aphids, powdery mildew; use resistant varieties and fungicides/insecticides when necessary",
+          "yieldPerAcre": 4.0,
+          "sowingMonths": "Rabi (Oct–Dec)",
+          "harvestMonths": "Dec–Mar",
+          "description": "Cool-season legume for green pods and dry seed; prefers light, fertile soils and moderate moisture."
+        },
+        "potato": {
+          "name": "Potato",
+          "costPerAcre": 25000,
+          "time": 3,
+          "seed": "8–10 quintal seed tubers per acre (certified, disease-free)",
+          "irrigation": "Regular, frequent irrigations; avoid water stress especially during tuber initiation",
+          "fertilizers": { "urea": "3 bags", "dap": "2 bags", "mop": "1 bag", "other": "Apply FYM; balanced NPK and micronutrients for quality" },
+          "pesticides": "Late blight, tuber rot, aphids; fungicidal sprays, seed treatment, and resistant varieties recommended",
+          "yieldPerAcre": 8.0,
+          "sowingMonths": "Rabi/Autumn (Oct–Dec) depending on zone",
+          "harvestMonths": "Jan–Mar (90–120 days)",
+          "description": "High-return tuber crop needing cool nights and well-drained loamy soils with high organic matter."
+        },
+        "pulses": {
+          "name": "Pulses (General)",
+          "costPerAcre": 7000,
+          "time": "2.5–4 (crop dependent)",
+          "seed": "Varies by pulse crop (lentil, urad, moong, etc.)",
+          "irrigation": "Generally low to moderate; pulses are often rainfed",
+          "fertilizers": { "urea": "Low", "dap": "Low", "mop": "Low", "other": "Rhizobium inoculation useful" },
+          "pesticides": "Pod borers, aphids; crop-specific IPM advised",
+          "yieldPerAcre": "Varies (0.6–1.8)",
+          "sowingMonths": "Varies by crop",
+          "harvestMonths": "Varies",
+          "description": "Collective entry for multiple pulse crops; each pulse has crop-specific needs — better to use specific pulse entries where possible."
+        },
+        "rapeseed": {
+          "name": "Rapeseed (Canola / Rape)",
+          "costPerAcre": 8000,
+          "time": 4,
+          "seed": "4–6 kg seed per acre",
+          "irrigation": "Low to moderate; 1–2 irrigations during flowering and pod fill",
+          "fertilizers": { "urea": "1 bag", "dap": "1 bag", "mop": "0.5 bag", "other": "Sulphur often needed" },
+          "pesticides": "Aphids, pod borer; monitor and spray as needed",
+          "yieldPerAcre": 1.0,
+          "sowingMonths": "Rabi (Oct–Nov)",
+          "harvestMonths": "Feb–Mar",
+          "description": "Cool-season oilseed similar to mustard; sensitive to sulphur deficiency for yield and oil quality."
+        },
+        "sesame": {
+          "name": "Sesame (Til)",
+          "costPerAcre": 7000,
+          "time": 3,
+          "seed": "3–4 kg seed per acre (broadcast or dibbled)",
+          "irrigation": "Drought tolerant; minimal irrigation — avoid excess moisture at maturity",
+          "fertilizers": { "urea": "0.5 bag", "dap": "0.5 bag", "mop": "0.25 bag", "other": "" },
+          "pesticides": "Stem rot, leaf spot; seed treatment and fungicide application advised",
+          "yieldPerAcre": 0.5,
+          "sowingMonths": "Kharif (Jun–Jul)",
+          "harvestMonths": "Sep–Oct",
+          "description": "Oilseed for arid/semi-arid zones; shallow root system, sensitive to waterlogging at maturity."
+        },
+        "soybean": {
+          "name": "Soybean",
+          "costPerAcre": 9000,
+          "time": 3,
+          "seed": "50–60 kg seed per acre",
+          "irrigation": "Moderate; often rainfed; one irrigation at pod fill if dry",
+          "fertilizers": { "urea": "Usually not recommended (legume)", "dap": "1 bag for P if deficient", "mop": "0.5 bag", "other": "Rhizobium inoculation strongly recommended" },
+          "pesticides": "Pod borers, aphids; use IPM and timely sprays",
+          "yieldPerAcre": 1.2,
+          "sowingMonths": "Kharif (Jun–Jul)",
+          "harvestMonths": "Sep–Oct",
+          "description": "Major oilseed-legume used for oil and protein; fixes nitrogen and prefers well-drained loam soils."
+        },
+        "spinach": {
+          "name": "Spinach",
+          "costPerAcre": 9000,
+          "time": 0.75,
+          "seed": "1–2 kg seed per acre (broadcast/direct sowing)",
+          "irrigation": "Frequent light irrigation; keep soil moist for leafy growth",
+          "fertilizers": { "urea": "0.5 bag", "dap": "0.25 bag", "mop": "0.25 bag", "other": "Apply compost; quick N feeding for leafiness" },
+          "pesticides": "Aphids and leaf miners; use row covers, neem, or targeted insecticides",
+          "yieldPerAcre": 12.0,
+          "sowingMonths": "Year-round in cooler months; best in winter and spring",
+          "harvestMonths": "Continuous multiple harvests after 20–30 days",
+          "description": "Fast-growing leafy vegetable; shallow soils acceptable, prefers cool weather and regular moisture."
+        },
+        "sunflower": {
+          "name": "Sunflower",
+          "costPerAcre": 11000,
+          "time": 3,
+          "seed": "6–8 kg hybrid seed per acre",
+          "irrigation": "Moderate; beneficial to irrigate at flowering and seed fill",
+          "fertilizers": { "urea": "1.5 bags", "dap": "1 bag", "mop": "0.5 bag", "other": "" },
+          "pesticides": "Helicoverpa and other borers; use timely sprays and IPM",
+          "yieldPerAcre": 1.0,
+          "sowingMonths": "Kharif (Jun–Jul) or rabi in some zones",
+          "harvestMonths": "Sep–Oct",
+          "description": "Oilseed crop tolerant of semi-arid conditions; prefers well-drained soils and warm climate for best oil content."
+        },
+        "tomato": {
+          "name": "Tomato",
+          "costPerAcre": 28000,
+          "time": 3,
+          "seed": "0.2–0.5 g seed for nursery (transplants ~4000–6000 plants per acre)",
+          "irrigation": "Regular, maintain even soil moisture; drip irrigation recommended for quality",
+          "fertilizers": { "urea": "2 bags", "dap": "1 bag", "mop": "1 bag", "other": "Calcium applications reduce blossom end rot" },
+          "pesticides": "Bacterial wilt, early blight, fruit borer, whitefly; use resistant varieties, crop rotation and targeted sprays",
+          "yieldPerAcre": 12.0,
+          "sowingMonths": "Year-round with season management; main seasons vary regionally",
+          "harvestMonths": "Continuous after ~60–90 days from transplant, multiple harvests",
+          "description": "High-value vegetable needing fertile soils, consistent moisture, and good disease management for quality fruits."
+        },
+        "turmeric": {
+          "name": "Turmeric",
+          "costPerAcre": 18000,
+          "time": 8,
+          "seed": "10–12 quintal seed rhizomes per acre",
+          "irrigation": "Moderate; regular irrigation during early growth, less near maturity",
+          "fertilizers": { "urea": "1.5 bags", "dap": "1 bag", "mop": "1 bag", "other": "Apply FYM/compost heavily for rhizome quality" },
+          "pesticides": "Rhizome rot and leaf spot; seed treatment and fungicidal drench recommended",
+          "yieldPerAcre": 5.0,
+          "sowingMonths": "Kharif (Jun–Aug)",
+          "harvestMonths": "Jan–Mar (8–10 months)",
+          "description": "Perennial spice crop needing warm, humid climate and well-drained loamy soils rich in organic matter."
+        },
+        "maize": {
+          "name": "Maize",
+          "costPerAcre": 7000,
+          "time": 3.5,
+          "seed": "10–12 kg hybrid seed per acre",
+          "irrigation": "Moderate; 3–4 irrigations (critical: tasseling and grain fill)",
+          "fertilizers": { "urea": "2 bags", "dap": "1 bag", "mop": "0.5 bag", "other": "Split N application recommended" },
+          "pesticides": "Stem borer, fall armyworm; foliar insecticides or biocontrols as needed",
+          "yieldPerAcre": 2.5,
+          "sowingMonths": "Kharif/Rabi depending on region (Jun–Oct or Nov–Feb)",
+          "harvestMonths": "Sep–Nov or Mar–May",
+          "description": "Versatile cereal (grain and fodder); prefers fertile, well-drained soils and warm temperatures for high yields."
         }
       };
 
       if (cropData[crop]) {
         const data = cropData[crop];
-        document.getElementById('cropName').textContent = data.name;
-        document.getElementById('cropCost').textContent = (land * data.costPerAcre).toLocaleString();
-        document.getElementById('cropTime').textContent = data.time;
-        document.getElementById('cropResources').textContent = data.resources;
+        
+        // Update all the data fields
+        document.getElementById('cropNameDetail').textContent = data.name;
+        document.getElementById('cropCostDetail').textContent = (land * data.costPerAcre).toLocaleString();
+        document.getElementById('landSize').textContent = land;
+        document.getElementById('landSize2').textContent = land;
+        document.getElementById('costPerAcre').textContent = data.costPerAcre.toLocaleString();
+        document.getElementById('cropTimeDetail').textContent = data.time;
+        document.getElementById('seedRequirements').textContent = data.seed;
+        document.getElementById('irrigationNeeds').textContent = data.irrigation;
+        
+        // Format fertilizer data
+        let fertilizerHtml = '';
+        for (const [key, value] of Object.entries(data.fertilizers)) {
+          if (value && value !== "") {
+            fertilizerHtml += `<div class="fertilizer-item"><span>${key.charAt(0).toUpperCase() + key.slice(1)}:</span> <strong>${value}</strong></div>`;
+          }
+        }
+        document.getElementById('fertilizerRequirements').innerHTML = fertilizerHtml;
+        
+        document.getElementById('pesticideInfo').textContent = data.pesticides;
+        document.getElementById('cropYieldDetail').textContent = (land * data.yieldPerAcre).toLocaleString();
+        document.getElementById('yieldPerAcre').textContent = data.yieldPerAcre;
+        
+        // Format sowing months
+        document.getElementById('sowingSeason').innerHTML = `
+          <strong>${data.sowingMonths}</strong>
+          <div class="month-indicator">
+            ${data.sowingMonths.includes('Jan') ? '<span class="month-pill">Jan</span>' : ''}
+            ${data.sowingMonths.includes('Feb') ? '<span class="month-pill">Feb</span>' : ''}
+            ${data.sowingMonths.includes('Mar') ? '<span class="month-pill">Mar</span>' : ''}
+            ${data.sowingMonths.includes('Apr') ? '<span class="month-pill">Apr</span>' : ''}
+            ${data.sowingMonths.includes('May') ? '<span class="month-pill">May</span>' : ''}
+            ${data.sowingMonths.includes('Jun') ? '<span class="month-pill">Jun</span>' : ''}
+            ${data.sowingMonths.includes('Jul') ? '<span class="month-pill">Jul</span>' : ''}
+            ${data.sowingMonths.includes('Aug') ? '<span class="month-pill">Aug</span>' : ''}
+            ${data.sowingMonths.includes('Sep') ? '<span class="month-pill">Sep</span>' : ''}
+            ${data.sowingMonths.includes('Oct') ? '<span class="month-pill">Oct</span>' : ''}
+            ${data.sowingMonths.includes('Nov') ? '<span class="month-pill">Nov</span>' : ''}
+            ${data.sowingMonths.includes('Dec') ? '<span class="month-pill">Dec</span>' : ''}
+          </div>
+        `;
+        
+        // Format harvest months
+        document.getElementById('harvestSeason').innerHTML = `
+          <strong>${data.harvestMonths}</strong>
+          <div class="month-indicator">
+            ${data.harvestMonths.includes('Jan') ? '<span class="month-pill">Jan</span>' : ''}
+            ${data.harvestMonths.includes('Feb') ? '<span class="month-pill">Feb</span>' : ''}
+            ${data.harvestMonths.includes('Mar') ? '<span class="month-pill">Mar</span>' : ''}
+            ${data.harvestMonths.includes('Apr') ? '<span class="month-pill">Apr</span>' : ''}
+            ${data.harvestMonths.includes('May') ? '<span class="month-pill">May</span>' : ''}
+            ${data.harvestMonths.includes('Jun') ? '<span class="month-pill">Jun</span>' : ''}
+            ${data.harvestMonths.includes('Jul') ? '<span class="month-pill">Jul</span>' : ''}
+            ${data.harvestMonths.includes('Aug') ? '<span class="month-pill">Aug</span>' : ''}
+            ${data.harvestMonths.includes('Sep') ? '<span class="month-pill">Sep</span>' : ''}
+            ${data.harvestMonths.includes('Oct') ? '<span class="month-pill">Oct</span>' : ''}
+            ${data.harvestMonths.includes('Nov') ? '<span class="month-pill">Nov</span>' : ''}
+            ${data.harvestMonths.includes('Dec') ? '<span class="month-pill">Dec</span>' : ''}
+          </div>
+        `;
+        
         document.getElementById('cropDescription').textContent = data.description;
-        document.getElementById('cropYield').textContent = (land * data.yieldPerAcre).toLocaleString();
-        document.getElementById('fertilizerNeeded').textContent = (land * data.fertilizerPerAcre).toFixed(1);
+        
+        // Show result section
         document.getElementById('cropEstimationResult').style.display = 'block';
       }
     });

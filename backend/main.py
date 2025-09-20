@@ -9,7 +9,6 @@ from PIL import Image
 import os
 from uuid import uuid4
 from datetime import datetime
-import humanize
 import pandas as pd
 
 # ✅ Service Imports
@@ -20,8 +19,6 @@ from backend.services.weather import get_weather_data
 from backend.community import models as community_models
 from backend.community import routes as community_routes
 from backend.database.db import get_db
-
-from sqlalchemy.orm import Session
 
 app = FastAPI()
 
@@ -124,6 +121,33 @@ def crop_page(request: Request):
         "recommended_crop": None,
         "tips": None
     })
+@app.get("/soil", response_class=HTMLResponse)
+def soil_page(request: Request):
+    return templates.TemplateResponse("soil.html", {"request": request})
+
+@app.get("/disease", response_class=HTMLResponse)
+def disease_page(request: Request):
+    return templates.TemplateResponse("disease.html", {"request": request})
+
+@app.get("/weather", response_class=HTMLResponse)
+def weather_page(request: Request):
+    return templates.TemplateResponse("weather.html", {"request": request})
+
+@app.get("/profit", response_class=HTMLResponse)
+def profit_page(request: Request):
+    return templates.TemplateResponse("profit.html", {"request": request})
+
+@app.get("/problem", response_class=HTMLResponse)
+def problem_page(request: Request):
+    return templates.TemplateResponse("problem.html", {"request": request})
+
+@app.get("/instructions", response_class=HTMLResponse)
+def instructions_page(request: Request):
+    return templates.TemplateResponse("instructions.html", {"request": request})
+
+@app.get("/community", response_class=HTMLResponse)
+def community_page(request: Request):
+    return templates.TemplateResponse("community.html", {"request": request})
 
 @app.post("/crop", response_class=HTMLResponse)
 async def predict_crop_form(
