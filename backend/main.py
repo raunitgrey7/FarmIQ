@@ -1,5 +1,5 @@
-from fastapi import FastAPI, Request, UploadFile, File, Form, Body, Depends
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi import FastAPI, Request, UploadFile, File, Form, Body, Depends, Query
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -10,7 +10,7 @@ import os
 from uuid import uuid4
 from datetime import datetime
 import humanize
-import pandas as pd  # <-- added for loading all_crops.parquet
+import pandas as pd
 
 # ✅ Service Imports
 from backend.services.predictor import get_crop_tips, get_top_matching_crops
@@ -18,11 +18,11 @@ from backend.disease_model.predict_disease import router as disease_router, pred
 from backend.services.weather import get_weather_data
 # ✅ Community Imports
 from backend.community import models as community_models
-from backend.community import routes as community_routes  # ✅ Importing the router
+from backend.community import routes as community_routes
 from backend.database.db import get_db
 
-
 from sqlalchemy.orm import Session
+
 app = FastAPI()
 
 # ✅ CORS
@@ -37,27 +37,21 @@ app.add_middleware(
 # ✅ Static & Templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
-app.templates = templates  # Required for community templates
+app.templates = templates
 
 # ✅ Include Community & Disease Routes
 app.include_router(disease_router)
-app.include_router(community_routes.router)  # ✅ This enables /community/delete/{id}
+app.include_router(community_routes.router)
 
 # ✅ Create DB Tables
 db = next(get_db())
 community_models.Base.metadata.create_all(bind=db.bind)
 
-
-# ---------------------------
-# Minimal additions start here
-# ---------------------------
-# Load merged parquet for location-based quick lookups (if present).
-# This is safe — if the file doesn't exist your existing app remains unchanged.
+# ✅ Load dataset for location lookup
 PARQUET_PATH = "backend/data/all_crops.parquet"
 if os.path.exists(PARQUET_PATH):
     try:
         district_df = pd.read_parquet(PARQUET_PATH)
-        # Normalize text for case-insensitive lookups
         if "state" in district_df.columns:
             district_df["state"] = district_df["state"].astype(str).str.lower()
         if "district" in district_df.columns:
@@ -73,22 +67,14 @@ else:
     print("⚠️ all_crops.parquet not found — location lookup disabled.")
 
 def get_district_data(state: str, district: str, season: str, temperature: float):
-    """
-    Fetch N,P,K,humidity,ph,rainfall from the merged dataset for the given state/district/season.
-    Returns list in the order expected by get_top_matching_crops:
-      [N, P, K, temperature, humidity, ph, rainfall]
-    Returns None if no matching row found.
-    """
     if district_df.empty:
         return None
 
     try:
-        # case-insensitive match - we stored lowercase above
         state_l = state.strip().lower()
         district_l = district.strip().lower()
         season_l = season.strip().lower()
 
-        # Filter rows
         print(f"🔍 Looking for state={state}, district={district}, season={season}")
         rows = district_df[
             (district_df["state"] == state_l) &
@@ -97,7 +83,6 @@ def get_district_data(state: str, district: str, season: str, temperature: float
         ]
 
         if rows.empty:
-            # try matching only state+district (ignore season)
             print("⚠️ No exact match found, trying fallback state+district only")
             rows = district_df[
                 (district_df["state"] == state_l) &
@@ -108,28 +93,19 @@ def get_district_data(state: str, district: str, season: str, temperature: float
             print("❌ Still no data found")
             return None
 
-        # pick the first matching row (dataset may have many entries)
         row = rows.iloc[0]
 
-        # Extract features safely with fallbacks
-        # Expecting columns: N, P, K, humidity, ph, rainfall
-        # Replace 'temperature' with user-provided temperature
-        N = float(row.get("N", row.get("nitrogen", 0)))
-        P = float(row.get("P", row.get("phosphorus", 0)))
-        K = float(row.get("K", row.get("potassium", 0)))
-        humidity = float(row.get("humidity", row.get("Humidity", 0)))
-        ph_val = float(row.get("ph", row.get("pH", row.get("PH", 0))))
-        rainfall = float(row.get("rainfall", row.get("avg_rainfall", 0)))
+        N = float(row.get("N", row.get("N_kg_ha", 0)))
+        P = float(row.get("P", row.get("P_kg_ha", 0)))
+        K = float(row.get("K", row.get("K_kg_ha", 0)))
+        humidity = float(row.get("humidity", 0))  # not in dataset, keep fallback 0
+        ph_val = float(row.get("ph", row.get("soil_ph", 0)))
+        rainfall = float(row.get("rainfall", row.get("avg_rainfall_mm", 0)))
 
-        input_values = [N, P, K, float(temperature), humidity, ph_val, rainfall]
-        return input_values
+        return [N, P, K, float(temperature), ph_val, rainfall]
     except Exception as e:
         print("⚠️ get_district_data error:", e)
         return None
-# -------------------------
-# Minimal additions end here
-# -------------------------
-
 
 # ✅ Page Routes
 @app.get("/", response_class=HTMLResponse)
@@ -156,11 +132,10 @@ async def predict_crop_form(
     phosphorus: float = Form(...),
     potassium: float = Form(...),
     temperature: float = Form(...),
-    humidity: float = Form(...),
     ph: float = Form(...),
     rainfall: float = Form(...)
 ):
-    input_values = [nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]
+    input_values = [nitrogen, phosphorus, potassium, temperature, ph, rainfall]
     top_crops = get_top_matching_crops(input_values)
     recommended_crop = top_crops[0]["crop"]
     tips = top_crops[0]["tips"]
@@ -172,39 +147,7 @@ async def predict_crop_form(
         "tips": tips
     })
 
-@app.get("/soil")
-def soil_page(request: Request):
-    return templates.TemplateResponse("soil.html", {
-        "request": request,
-        "soil_type": None,
-        "recommended_crop": None,
-        "recommendation_description": None,
-        "sand": None,
-        "silt": None,
-        "clay": None
-    })
-
-@app.get("/disease")
-def disease_page(request: Request):
-    return templates.TemplateResponse("disease.html", {"request": request})
-
-@app.get("/instructions")
-def instruction_page(request: Request):
-    return templates.TemplateResponse("instructions.html", {"request": request})
-
-@app.get("/weather")
-def weather_page(request: Request):
-    return templates.TemplateResponse("weather.html", {"request": request})
-
-@app.get("/profit")
-def profit_page(request: Request):
-    return templates.TemplateResponse("profit.html", {"request": request})
-
-@app.get("/problem")
-def problems_page(request: Request):
-    return templates.TemplateResponse("problem.html", {"request": request})
-
-# ✅ Crop Recommendation – JSON API Route (Used by JS)
+# ✅ Crop Recommendation – JSON API Route
 @app.post("/predict-json")
 async def predict_crop_api(data: dict = Body(...)):
     try:
@@ -213,7 +156,6 @@ async def predict_crop_api(data: dict = Body(...)):
             data["phosphorus"],
             data["potassium"],
             data["temperature"],
-            data["humidity"],
             data["ph"],
             data["rainfall"]
         ]
@@ -224,24 +166,18 @@ async def predict_crop_api(data: dict = Body(...)):
 
         return {
             "recommended_crop": recommended_crop,
+            "top_crops": [c["crop"] for c in top_crops],
             "tips": tips
         }
 
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
-# ✅ Duplicate for JS compatibility
 @app.post("/predict")
 async def predict_crop_alias(data: dict = Body(...)):
     return await predict_crop_api(data)
 
-
-# -------------------------
-# New minimal endpoint:
-# POST /predict-location
-# Accepts JSON body: { "state": "...", "district": "...", "season": "...", "temperature": <num> }
-# Returns { "recommended_crop": "...", "top_crops": [...] } like other endpoints.
-# -------------------------
+# ✅ New endpoint: Predict using location
 @app.post("/predict-location")
 async def predict_from_location(data: dict = Body(...)):
     try:
@@ -252,11 +188,10 @@ async def predict_from_location(data: dict = Body(...)):
 
         if not (state and district and season and (temperature is not None)):
             return JSONResponse(
-                {"error": "Missing one of state / district / season / temperature in request body"},
+                {"error": "Missing one of state / district / season / temperature"},
                 status_code=400
             )
 
-        # Build input vector from district data + user temperature
         input_values = get_district_data(state, district, season, temperature)
         if not input_values:
             return JSONResponse(
@@ -265,22 +200,24 @@ async def predict_from_location(data: dict = Body(...)):
             )
 
         top_crops = get_top_matching_crops(input_values)
-        recommended_crop = top_crops[0]["crop"] if top_crops else None
-        tips = top_crops[0]["tips"] if top_crops else {}
+        if not top_crops:
+            return JSONResponse({"error": "No crops found"}, status_code=404)
+
+        recommended_crop = top_crops[0]["crop"]
+        tips = top_crops[0]["tips"]
 
         return {
             "recommended_crop": recommended_crop,
-            "top_crops": top_crops,
+            "top_crops": top_crops,   # ✅ now contains [{crop, similarity, tips}, ...]
             "tips": tips
         }
 
     except Exception as e:
+        print("❌ Error in /predict-location:", e)
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
 
-# ✅ Locations API – returns states, districts, seasons
-from fastapi import Query
-
+# ✅ Locations API
 @app.get("/locations")
 async def get_locations(state: str = Query(None), district: str = Query(None)):
     if district_df.empty:
@@ -288,19 +225,16 @@ async def get_locations(state: str = Query(None), district: str = Query(None)):
 
     try:
         if state is None and district is None:
-            # Return all unique states
             states = sorted(district_df["state"].dropna().unique().tolist())
             return {"states": states}
 
         if state is not None and district is None:
-            # Return districts in that state
             districts = sorted(
                 district_df[district_df["state"] == state.lower()]["district"].dropna().unique().tolist()
             )
             return {"districts": districts}
 
         if district is not None:
-            # Return seasons in that district
             seasons = sorted(
                 district_df[district_df["district"] == district.lower()]["season"].dropna().unique().tolist()
             )

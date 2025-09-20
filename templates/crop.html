@@ -1055,12 +1055,11 @@
 
       try {
         const response = await fetch('/predict-location', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(data)   // use the `data` object we already built
+});
+
 
         if (!response.ok) {
           throw new Error('Server responded with an error');
