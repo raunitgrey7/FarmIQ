@@ -17,6 +17,12 @@
   </div>
 </div>
 
+<!-- Custom Tractor Cursor -->
+<div class="tractor-cursor">
+  <div class="tractor">🚜</div>
+  <div class="tractor-dust"></div>
+</div>
+
 <!-- Main Content -->
 <div id="main-content" style="display: none;">
   <!-- Animated Background Elements -->
@@ -94,6 +100,54 @@
 </div>
 
 <style>
+  /* Custom cursor styles */
+  .tractor-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 60px;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    transform: translate(-50%, -50%);
+    display: none;
+  }
+  
+  .tractor {
+    font-size: 40px;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+  }
+  
+  .tractor-dust {
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 8px;
+    background: rgba(200, 200, 200, 0.6);
+    border-radius: 50%;
+    filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  body.cursor-moving .tractor-dust {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.2);
+  }
+  
+  .tractor-cursor.card-hover {
+    transform: translate(-50%, -50%) scale(1.5);
+    z-index: 10000;
+  }
+  
+  .tractor-cursor.card-hover .tractor {
+    transform: rotate(10deg);
+  }
+  
   /* Welcome Screen Styles */
   .welcome-screen {
     position: fixed;
@@ -255,6 +309,12 @@
     margin-bottom: 1.5rem;
     color: white;
     text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: all 0.5s ease;
+  }
+  
+  .hero-title:hover {
+    text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transform: scale(1.02);
   }
   
   .hero-subtitle {
@@ -262,6 +322,11 @@
     margin-bottom: 3rem;
     opacity: 0.9;
     line-height: 1.6;
+    transition: all 0.5s ease;
+  }
+  
+  .hero-subtitle:hover {
+    letter-spacing: 0.5px;
   }
   
   /* Scroll indicator */
@@ -314,6 +379,12 @@
     display: inline-block;
     left: 50%;
     transform: translateX(-50%);
+    transition: all 0.3s ease;
+  }
+  
+  .section-title:hover {
+    text-shadow: 2px 2px 4px rgba(46, 125, 50, 0.2);
+    transform: translateX(-50%) scale(1.05);
   }
   
   .section-title::after {
@@ -326,6 +397,11 @@
     height: 4px;
     background: #4CAF50;
     border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+  
+  .section-title:hover::after {
+    width: 120px;
   }
   
   .features-grid {
@@ -347,6 +423,8 @@
     text-decoration: none;
     z-index: 1;
     border: 1px solid rgba(76, 175, 80, 0.1);
+    transform-style: preserve-3d;
+    perspective: 1000px;
   }
   
   .feature-card::before {
@@ -362,9 +440,10 @@
   }
   
   .feature-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-10px) scale(1.05) rotate(1deg);
     color: white;
     box-shadow: 0 15px 35px rgba(46, 125, 50, 0.2);
+    z-index: 10;
   }
   
   .feature-card:hover::before {
@@ -376,10 +455,11 @@
     margin-bottom: 1rem;
     transition: all 0.3s ease;
     filter: grayscale(0.8) brightness(0.9);
+    display: inline-block;
   }
   
   .feature-card:hover .feature-icon {
-    transform: scale(1.2);
+    transform: scale(1.2) rotate(5deg);
     filter: grayscale(0) brightness(1.2);
   }
   
@@ -392,6 +472,7 @@
   
   .feature-card:hover h3 {
     color: white;
+    transform: translateZ(20px);
   }
   
   .feature-card p {
@@ -403,6 +484,7 @@
   
   .feature-card:hover p {
     color: rgba(255, 255, 255, 0.9);
+    transform: translateZ(10px);
   }
   
   .feature-hover-effect {
@@ -457,6 +539,10 @@
     .scroll-indicator {
       display: none;
     }
+    
+    .tractor-cursor {
+      display: none !important;
+    }
   }
   
   /* Dark mode support */
@@ -496,6 +582,9 @@
       document.getElementById("welcome-screen").style.display = "none";
       document.getElementById("main-content").style.display = "block";
       
+      // Initialize tractor cursor after welcome screen is hidden
+      initTractorCursor();
+      
       if (!reducedMotion) {
         // Animate in the main content
         document.querySelectorAll('.hero-title, .hero-subtitle, .feature-card').forEach(el => {
@@ -521,6 +610,67 @@
         }, 100);
       }
     }, 800);
+  }
+
+  // Tractor cursor functionality
+  function initTractorCursor() {
+    if (reducedMotion) return;
+    
+    const tractor = document.querySelector('.tractor-cursor');
+    tractor.style.display = 'block';
+    
+    let mouseX = 0;
+    let mouseY = 0;
+    let tractorX = 0;
+    let tractorY = 0;
+    let isMoving = false;
+    let moveTimeout;
+    
+    // Track mouse movement
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      
+      if (!isMoving) {
+        isMoving = true;
+        document.body.classList.add('cursor-moving');
+      }
+      
+      clearTimeout(moveTimeout);
+      moveTimeout = setTimeout(() => {
+        isMoving = false;
+        document.body.classList.remove('cursor-moving');
+      }, 100);
+    });
+    
+    // Smooth animation for tractor
+    function animateTractor() {
+      // Calculate distance to move (easing effect)
+      tractorX += (mouseX - tractorX) * 0.2;
+      tractorY += (mouseY - tractorY) * 0.2;
+      
+      // Update tractor position
+      tractor.style.left = `${tractorX}px`;
+      tractor.style.top = `${tractorY}px`;
+      
+      requestAnimationFrame(animateTractor);
+    }
+    
+    // Start animation
+    animateTractor();
+    
+    // Handle card hover effects
+    const cards = document.querySelectorAll('.feature-card');
+    
+    cards.forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        tractor.classList.add('card-hover');
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        tractor.classList.remove('card-hover');
+      });
+    });
   }
 
   // Simple parallax effect with performance optimization
