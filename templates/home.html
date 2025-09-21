@@ -23,6 +23,11 @@
   <div class="tractor-dust"></div>
 </div>
 
+<!-- Audio element for tractor sound -->
+<audio id="tractor-sound" loop>
+  <source src="/static/audio/tractor.mp3" type="audio/mpeg">
+</audio>
+
 <!-- Main Content -->
 <div id="main-content" style="display: none;">
   <!-- Animated Background Elements -->
@@ -100,6 +105,11 @@
 </div>
 
 <style>
+  /* Hide default cursor everywhere */
+  body, a, button, .feature-card {
+    cursor: none !important;
+  }
+
   /* Custom cursor styles */
   .tractor-cursor {
     position: fixed;
@@ -118,6 +128,7 @@
     font-size: 40px;
     transition: transform 0.2s ease;
     filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+    animation: tractor-bounce 0.8s infinite alternate;
   }
   
   .tractor-dust {
@@ -137,6 +148,7 @@
   body.cursor-moving .tractor-dust {
     opacity: 1;
     transform: translateX(-50%) scale(1.2);
+    animation: dust-move 0.5s infinite alternate;
   }
   
   .tractor-cursor.card-hover {
@@ -146,6 +158,22 @@
   
   .tractor-cursor.card-hover .tractor {
     transform: rotate(10deg);
+    animation: tractor-hover 0.5s infinite alternate;
+  }
+  
+  @keyframes tractor-bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-3px); }
+  }
+  
+  @keyframes tractor-hover {
+    0% { transform: rotate(10deg) translateY(0); }
+    100% { transform: rotate(10deg) translateY(-5px); }
+  }
+  
+  @keyframes dust-move {
+    0% { transform: translateX(-50%) scale(1.2); opacity: 0.6; }
+    100% { transform: translateX(-50%) scale(1.5); opacity: 0.8; }
   }
   
   /* Welcome Screen Styles */
@@ -206,7 +234,7 @@
     padding: 12px 30px;
     font-size: 1.2rem;
     border-radius: 50px;
-    cursor: pointer;
+    cursor: none;
     transition: all 0.3s;
     opacity: 0;
     box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
@@ -571,6 +599,13 @@
   // Performance optimization - only run animations when needed
   let reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   
+  // Variables for tractor cursor and sound
+  let tractorSound;
+  let isMoving = false;
+  let moveTimeout;
+  let lastX = 0;
+  let lastY = 0;
+  
   function showWelcomeScreen() {
     document.getElementById("main-content").style.display = "none";
     document.getElementById("welcome-screen").style.display = "flex";
@@ -616,6 +651,9 @@
   function initTractorCursor() {
     if (reducedMotion) return;
     
+    // Get the tractor sound element
+    tractorSound = document.getElementById('tractor-sound');
+    
     const tractor = document.querySelector('.tractor-cursor');
     tractor.style.display = 'block';
     
@@ -623,23 +661,43 @@
     let mouseY = 0;
     let tractorX = 0;
     let tractorY = 0;
-    let isMoving = false;
-    let moveTimeout;
     
     // Track mouse movement
     document.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
       
-      if (!isMoving) {
+      // Check if cursor has actually moved a significant distance
+      const deltaX = Math.abs(mouseX - lastX);
+      const deltaY = Math.abs(mouseY - lastY);
+      
+      if ((deltaX > 2 || deltaY > 2) && !isMoving) {
         isMoving = true;
         document.body.classList.add('cursor-moving');
+        
+        // Play tractor sound
+        if (tractorSound) {
+          tractorSound.currentTime = 0;
+          tractorSound.play().catch(e => {
+            console.log("Audio play failed:", e);
+          });
+        }
       }
+      
+      lastX = mouseX;
+      lastY = mouseY;
       
       clearTimeout(moveTimeout);
       moveTimeout = setTimeout(() => {
-        isMoving = false;
-        document.body.classList.remove('cursor-moving');
+        if (isMoving) {
+          isMoving = false;
+          document.body.classList.remove('cursor-moving');
+          
+          // Stop tractor sound
+          if (tractorSound) {
+            tractorSound.pause();
+          }
+        }
       }, 100);
     });
     
@@ -671,6 +729,20 @@
         tractor.classList.remove('card-hover');
       });
     });
+    
+    // Handle audio permissions on first interaction
+    document.addEventListener('click', function enableAudio() {
+      if (tractorSound) {
+        // Try to play and immediately pause to ensure audio is ready
+        tractorSound.play().then(() => {
+          tractorSound.pause();
+          tractorSound.currentTime = 0;
+        }).catch(e => {
+          console.log("Audio initialization failed:", e);
+        });
+      }
+      document.removeEventListener('click', enableAudio);
+    }, { once: true });
   }
 
   // Simple parallax effect with performance optimization
