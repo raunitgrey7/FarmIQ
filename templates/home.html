@@ -21,12 +21,18 @@
 <div class="tractor-cursor">
   <div class="tractor">🚜</div>
   <div class="tractor-dust"></div>
+  <div class="tractor-smoke"></div> <!-- Added smoke element -->
 </div>
 
 <!-- Audio element for tractor sound -->
 <audio id="tractor-sound" loop>
   <source src="/static/audio/tractor.mp3" type="audio/mpeg">
 </audio>
+
+<!-- Theme Toggle Button -->
+<button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
+  <span class="theme-icon">🌙</span>
+</button>
 
 <!-- Main Content -->
 <div id="main-content" style="display: none;">
@@ -105,9 +111,74 @@
 </div>
 
 <style>
+  /* Theme variables */
+  :root {
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #ffffff;
+    --text-primary: #333333;
+    --text-secondary: #555555;
+    --accent-color: #4CAF50;
+    --accent-dark: #2E7D32;
+    --card-bg: #ffffff;
+    --card-border: rgba(76, 175, 80, 0.1);
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --hero-bg: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+    --section-bg: #f8f9fa;
+  }
+
+  [data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --accent-color: #4CAF50;
+    --accent-dark: #81C784;
+    --card-bg: #2d2d2d;
+    --card-border: #444444;
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    --hero-bg: linear-gradient(135deg, #1a2f1a 0%, #2e7d32 100%);
+    --section-bg: #1a1a1a;
+  }
+
+  /* Apply theme variables */
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
   /* Hide default cursor everywhere */
   body, a, button, .feature-card {
-    cursor: none !important;
+    cursor: none !important; /* Hide default cursor */
+  }
+
+  a:hover, button:hover, .feature-card:hover {
+    cursor: none !important; /* Show pointer when hovering */
+  }
+
+  /* Theme toggle button */
+  .theme-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    z-index: 1000;
+    cursor: pointer !important;
+    transition: all 0.3s ease;
+  }
+
+  .theme-toggle-btn:hover {
+    transform: scale(1.1) rotate(30deg);
   }
 
   /* Custom cursor styles */
@@ -121,7 +192,8 @@
     z-index: 9999;
     transition: transform 0.1s ease;
     transform: translate(-50%, -50%);
-    display: none;
+    display: block; /* Changed from display: none */
+    visibility: hidden; /* Added this line */
   }
   
   .tractor {
@@ -144,11 +216,31 @@
     opacity: 0;
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
+
+  /* Tractor smoke effect */
+  .tractor-smoke {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 15px;
+    height: 15px;
+    background: #555;
+    border-radius: 50% 50% 0 50%;
+    opacity: 0;
+    filter: blur(3px);
+    transform: scale(0);
+    transition: opacity 0.3s ease;
+  }
   
   body.cursor-moving .tractor-dust {
     opacity: 1;
     transform: translateX(-50%) scale(1.2);
     animation: dust-move 0.5s infinite alternate;
+  }
+
+  body.cursor-moving .tractor-smoke {
+    opacity: 0.8;
+    animation: smoke-puff 1s infinite;
   }
   
   .tractor-cursor.card-hover {
@@ -174,6 +266,21 @@
   @keyframes dust-move {
     0% { transform: translateX(-50%) scale(1.2); opacity: 0.6; }
     100% { transform: translateX(-50%) scale(1.5); opacity: 0.8; }
+  }
+
+  @keyframes smoke-puff {
+    0% { 
+      transform: translate(0, 0) scale(0.8); 
+      opacity: 0.8;
+    }
+    50% {
+      transform: translate(-5px, -10px) scale(1.2);
+      opacity: 0.6;
+    }
+    100% { 
+      transform: translate(-10px, -20px) scale(1.5); 
+      opacity: 0;
+    }
   }
   
   /* Welcome Screen Styles */
@@ -306,7 +413,7 @@
     position: relative;
     padding: 8rem 2rem;
     text-align: center;
-    background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+    background: var(--hero-bg);
     color: white;
     overflow: hidden;
     border-radius: 0 0 20px 20px;
@@ -390,7 +497,8 @@
   /* Features Section */
   .features-section {
     padding: 4rem 2rem;
-    background: #f8f9fa;
+    background: var(--section-bg);
+    transition: background-color 0.3s ease;
   }
   
   .container {
@@ -402,7 +510,7 @@
     text-align: center;
     font-size: 2.5rem;
     margin-bottom: 3rem;
-    color: #2e7d32;
+    color: var(--accent-color);
     position: relative;
     display: inline-block;
     left: 50%;
@@ -423,7 +531,7 @@
     transform: translateX(-50%);
     width: 80px;
     height: 4px;
-    background: #4CAF50;
+    background: var(--accent-color);
     border-radius: 2px;
     transition: all 0.3s ease;
   }
@@ -440,17 +548,17 @@
   
   .feature-card {
     position: relative;
-    background: white;
+    background: var(--card-bg);
     border-radius: 15px;
     padding: 2rem;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--card-shadow);
     transition: all 0.3s ease;
     overflow: hidden;
-    color: #333;
+    color: var(--text-primary);
     text-decoration: none;
     z-index: 1;
-    border: 1px solid rgba(76, 175, 80, 0.1);
+    border: 1px solid var(--card-border);
     transform-style: preserve-3d;
     perspective: 1000px;
   }
@@ -462,7 +570,7 @@
     left: 0;
     width: 100%;
     height: 0;
-    background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
     transition: height 0.5s ease;
     z-index: -1;
   }
@@ -495,7 +603,7 @@
     font-size: 1.5rem;
     margin-bottom: 1rem;
     transition: all 0.3s ease;
-    color: #2E7D32;
+    color: var(--accent-color);
   }
   
   .feature-card:hover h3 {
@@ -507,7 +615,7 @@
     opacity: 0.8;
     line-height: 1.6;
     transition: all 0.3s ease;
-    color: #555;
+    color: var(--text-secondary);
   }
   
   .feature-card:hover p {
@@ -572,27 +680,6 @@
       display: none !important;
     }
   }
-  
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    .features-section {
-      background: #1a1a1a;
-    }
-    
-    .feature-card {
-      background: #2d2d2d;
-      color: white;
-      border-color: #444;
-    }
-    
-    .feature-card h3 {
-      color: #4CAF50;
-    }
-    
-    .feature-card p {
-      color: #ccc;
-    }
-  }
 </style>
 
 <script>
@@ -605,10 +692,19 @@
   let moveTimeout;
   let lastX = 0;
   let lastY = 0;
+
+  // Theme management
+  let currentTheme = localStorage.getItem('theme') || 
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   
   function showWelcomeScreen() {
     document.getElementById("main-content").style.display = "none";
     document.getElementById("welcome-screen").style.display = "flex";
+    
+    // Initialize tractor cursor immediately
+    initTractorCursor();
+    // Apply theme
+    applyTheme();
   }
 
   function hideWelcomeScreen() {
@@ -649,18 +745,26 @@
 
   // Tractor cursor functionality
   function initTractorCursor() {
-    if (reducedMotion) return;
+    if (reducedMotion) {
+      document.querySelector('.tractor-cursor').style.display = 'none';
+      return;
+    }
     
     // Get the tractor sound element
     tractorSound = document.getElementById('tractor-sound');
     
     const tractor = document.querySelector('.tractor-cursor');
     tractor.style.display = 'block';
+    tractor.style.visibility = 'visible'; // Make cursor visible
     
-    let mouseX = 0;
-    let mouseY = 0;
-    let tractorX = 0;
-    let tractorY = 0;
+    let mouseX = window.innerWidth / 2; // Start at center of screen
+    let mouseY = window.innerHeight / 2;
+    let tractorX = mouseX;
+    let tractorY = mouseY;
+    
+    // Set initial position
+    tractor.style.left = `${tractorX}px`;
+    tractor.style.top = `${tractorY}px`;
     
     // Track mouse movement
     document.addEventListener('mousemove', (e) => {
@@ -677,6 +781,7 @@
         
         // Play tractor sound
         if (tractorSound) {
+          tractorSound.volume = 0.3; // Set volume to 30%
           tractorSound.currentTime = 0;
           tractorSound.play().catch(e => {
             console.log("Audio play failed:", e);
@@ -734,6 +839,7 @@
     document.addEventListener('click', function enableAudio() {
       if (tractorSound) {
         // Try to play and immediately pause to ensure audio is ready
+        tractorSound.volume = 0.3;
         tractorSound.play().then(() => {
           tractorSound.pause();
           tractorSound.currentTime = 0;
@@ -744,6 +850,34 @@
       document.removeEventListener('click', enableAudio);
     }, { once: true });
   }
+
+  // Theme functionality
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('theme', currentTheme);
+    
+    // Update theme toggle button icon
+    const themeIcon = document.querySelector('.theme-icon');
+    if (themeIcon) {
+      themeIcon.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+    }
+  }
+  
+  function toggleTheme() {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme();
+  }
+  
+  // Initialize theme toggle button
+  document.addEventListener('DOMContentLoaded', function() {
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', toggleTheme);
+    }
+    
+    // Apply theme on load
+    applyTheme();
+  });
 
   // Simple parallax effect with performance optimization
   let lastScrollY = 0;
