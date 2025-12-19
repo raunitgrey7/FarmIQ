@@ -121,6 +121,34 @@ def crop_page(request: Request):
         "recommended_crop": None,
         "tips": None
     })
+
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import HTMLResponse
+
+@app.get("/market", response_class=HTMLResponse)
+async def market_page(request: Request):
+    return templates.TemplateResponse("market.html", {"request": request, "prices": None})
+
+@app.post("/market", response_class=HTMLResponse)
+async def get_market_data(request: Request, district: str = Form(...)):
+    # Prototype Data for Saket/Delhi Presentation
+    # Added "change" field here to fix the template error
+    mock_data = [
+        {"market": "Okhla Mandi", "commodity": "Tomato", "variety": "Desi", "min_price": 2800, "max_price": 3800, "modal_price": 3450, "date": "20 Dec 2024", "change": 8},
+        {"market": "Mehrauli Mandi", "commodity": "Potato", "variety": "F.A.Q.", "min_price": 600, "max_price": 1200, "modal_price": 950, "date": "20 Dec 2024", "change": -2},
+        {"market": "Okhla Mandi", "commodity": "Onion", "variety": "Red", "min_price": 4500, "max_price": 5500, "modal_price": 5100, "date": "20 Dec 2024", "change": 12},
+        {"market": "Najafgarh", "commodity": "Wheat", "variety": "Dara", "min_price": 2300, "max_price": 2600, "modal_price": 2400, "date": "19 Dec 2024", "change": 4},
+    ]
+    
+    # If the user enters anything related to Delhi, show the mock data
+    prices = mock_data if "delhi" in district.lower() or "saket" in district.lower() else []
+
+    return templates.TemplateResponse("market.html", {
+        "request": request, 
+        "prices": prices, 
+        "district": district.title()
+    })
+
 @app.get("/soil", response_class=HTMLResponse)
 def soil_page(request: Request):
     return templates.TemplateResponse("soil.html", {"request": request})
@@ -136,10 +164,6 @@ def weather_page(request: Request):
 @app.get("/profit", response_class=HTMLResponse)
 def profit_page(request: Request):
     return templates.TemplateResponse("profit.html", {"request": request})
-
-@app.get("/problem", response_class=HTMLResponse)
-def problem_page(request: Request):
-    return templates.TemplateResponse("problem.html", {"request": request})
 
 @app.get("/instructions", response_class=HTMLResponse)
 def instructions_page(request: Request):
@@ -268,41 +292,231 @@ async def get_locations(state: str = Query(None), district: str = Query(None)):
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
-# ✅ Soil Type Prediction + Recommendation
+# ✅ Updated Soil Type Prediction with Guided Field Test
 @app.post("/predict_soil", response_class=HTMLResponse)
-async def predict_soil(request: Request, sand: float = Form(...), silt: float = Form(...), clay: float = Form(...)):
-    soil_type = get_soil_type(sand, silt, clay)
-    recommended_crop, description = recommend_crop_by_soil(soil_type)
-
+async def predict_soil(
+    request: Request,
+    ball: str = Form(...),
+    ribbon: str = Form(...),
+    texture: str = Form(...)
+):
+    # Get soil type from field test
+    soil_type_usda, approx_percentages = get_soil_type_by_test(ball, ribbon, texture)
+    
+    # Map to Indian context
+    soil_mapping = get_indian_soil_mapping(soil_type_usda)
+    
+    # Get crop recommendations
+    crop_recommendations = recommend_crop_by_soil(soil_type_usda)
+    
+    # Get management tips
+    management_tips = get_management_tips(soil_type_usda)
+    
     return templates.TemplateResponse("soil.html", {
         "request": request,
-        "soil_type": soil_type,
-        "recommended_crop": recommended_crop,
-        "recommendation_description": description,
-        "sand": sand,
-        "silt": silt,
-        "clay": clay
+        "soil_type_usda": soil_type_usda,
+        "soil_type_local": soil_mapping["local_name"],
+        "soil_description": soil_mapping["description"],
+        "soil_class": soil_mapping["class"],
+        "sand": approx_percentages["sand"],
+        "silt": approx_percentages["silt"],
+        "clay": approx_percentages["clay"],
+        "kharif_crops": crop_recommendations["kharif"],
+        "rabi_crops": crop_recommendations["rabi"],
+        "management_tips": management_tips
     })
 
-# ✅ Soil Logic
-def get_soil_type(sand, silt, clay):
-    if sand > silt and sand > clay:
-        return "Sandy"
-    elif clay > sand and clay > silt:
-        return "Clayey"
-    elif silt > sand and silt > clay:
-        return "Silty"
-    else:
-        return "Loamy"
+# ✅ Soil Test Logic (USDA Feel Method)
+def get_soil_type_by_test(ball: str, ribbon: str, texture: str):
+    """
+    Determine soil type based on USDA feel test
+    Returns: (USDA soil type, approximate percentages)
+    """
+    # Decision tree based on USDA field test
+    if ball == "no":
+        return "Sandy", {"sand": 85, "silt": 10, "clay": 5}
+    
+    # If ball forms, check ribbon length
+    if ribbon == "none":
+        if texture == "gritty":
+            return "Sandy Loam", {"sand": 65, "silt": 20, "clay": 15}
+        elif texture == "smooth":
+            return "Silty Loam", {"sand": 25, "silt": 60, "clay": 15}
+        else:  # sticky
+            return "Clay Loam", {"sand": 30, "silt": 20, "clay": 50}
+    
+    elif ribbon == "short":
+        if texture == "gritty":
+            return "Sandy Clay Loam", {"sand": 55, "silt": 15, "clay": 30}
+        elif texture == "smooth":
+            return "Silty Clay Loam", {"sand": 10, "silt": 55, "clay": 35}
+        else:  # sticky
+            return "Clay Loam", {"sand": 30, "silt": 20, "clay": 50}
+    
+    elif ribbon == "medium":
+        if texture == "gritty":
+            return "Sandy Clay", {"sand": 45, "silt": 10, "clay": 45}
+        elif texture == "smooth":
+            return "Silty Clay", {"sand": 10, "silt": 45, "clay": 45}
+        else:  # sticky
+            return "Clay", {"sand": 20, "silt": 20, "clay": 60}
+    
+    else:  # long ribbon
+        if texture == "smooth":
+            return "Silty Clay", {"sand": 10, "silt": 45, "clay": 45}
+        else:  # sticky or gritty
+            return "Clay", {"sand": 20, "silt": 20, "clay": 60}
 
-def recommend_crop_by_soil(soil_type: str):
-    soil_crop_map = {
-        "Sandy": ("Carrots", "Sandy soil drains quickly and suits root crops like carrots."),
-        "Clayey": ("Rice", "Clayey soil retains water and is good for rice."),
-        "Silty": ("Lettuce", "Silty soil holds moisture and is great for leafy vegetables like lettuce."),
-        "Loamy": ("Wheat", "Loamy soil is balanced and supports cereals like wheat."),
+# ✅ Map USDA types to Indian context
+def get_indian_soil_mapping(usda_type: str):
+    mapping = {
+        "Sandy": {
+            "local_name": "Sandy Soil (Desert Soil)",
+            "description": "Light, quick-draining soil. Low water retention, fertilizers wash out quickly.",
+            "class": "sandy"
+        },
+        "Sandy Loam": {
+            "local_name": "Sandy Loam Soil",
+            "description": "Balanced soil with good drainage. Excellent for root vegetables and fruits.",
+            "class": "sandy"
+        },
+        "Loam": {
+            "local_name": "Loam Soil (Fertile)",
+            "description": "Ideal agricultural soil. Excellent nutrient and moisture retention capacity.",
+            "class": "loamy"
+        },
+        "Silty Loam": {
+            "local_name": "Silty Loam",
+            "description": "Soft and smooth soil. Good moisture retention, moderate aeration.",
+            "class": "silty"
+        },
+        "Clay Loam": {
+            "local_name": "Clay Loam Soil",
+            "description": "Heavy soil with good moisture retention. Suitable for wheat and paddy.",
+            "class": "clayey"
+        },
+        "Sandy Clay Loam": {
+            "local_name": "Sandy Clay Loam",
+            "description": "Medium-heavy soil. Mixture of sandy and clay characteristics.",
+            "class": "clayey"
+        },
+        "Silty Clay Loam": {
+            "local_name": "Silty Clay Loam",
+            "description": "Heavy and sticky soil. Retains moisture for long periods.",
+            "class": "clayey"
+        },
+        "Clay": {
+            "local_name": "Black Soil (Cotton Soil)",
+            "description": "Heavy, sticky soil. Develops cracks in summer. Famous for cotton cultivation.",
+            "class": "clayey"
+        },
+        "Silty Clay": {
+            "local_name": "Silty Black Soil",
+            "description": "Very heavy soil with excellent moisture retention. Requires drainage management.",
+            "class": "clayey"
+        },
+        "Sandy Clay": {
+            "local_name": "Sandy Black Soil",
+            "description": "Mixture of black and sandy soil. Moderate water retention capacity.",
+            "class": "clayey"
+        }
     }
-    return soil_crop_map.get(soil_type, ("Maize", "Suitable for a variety of crops including maize."))
+    return mapping.get(usda_type, {
+        "local_name": "Mixed Soil",
+        "description": "Combination of different soil types",
+        "class": "loamy"
+    })
+
+# ✅ Crop Recommendations for Indian Context
+def recommend_crop_by_soil(soil_type: str):
+    """
+    Returns crop recommendations for Kharif and Rabi seasons
+    """
+    crop_map = {
+        "Sandy": {
+            "kharif": "Pearl Millet (Bajra), Groundnut, Pigeon Pea, Cluster Beans",
+            "rabi": "Chickpea, Mustard, Barley, Peas"
+        },
+        "Sandy Loam": {
+            "kharif": "Maize, Green Gram, Black Gram, Sesame",
+            "rabi": "Wheat, Chickpea, Mustard, Flaxseed"
+        },
+        "Loam": {
+            "kharif": "Paddy, Maize, Soybean, Cotton",
+            "rabi": "Wheat, Chickpea, Mustard, Potato"
+        },
+        "Silty Loam": {
+            "kharif": "Paddy, Pulses, Vegetables",
+            "rabi": "Wheat, Chickpea, Lentil, Onion"
+        },
+        "Clay Loam": {
+            "kharif": "Paddy, Cotton, Soybean",
+            "rabi": "Wheat, Chickpea, Mustard, Lentil"
+        },
+        "Sandy Clay Loam": {
+            "kharif": "Cotton, Groundnut, Pigeon Pea",
+            "rabi": "Wheat, Barley, Chickpea, Mustard"
+        },
+        "Silty Clay Loam": {
+            "kharif": "Paddy, Jute, Soybean",
+            "rabi": "Wheat, Lentil, Chickpea, Spinach"
+        },
+        "Clay": {
+            "kharif": "Cotton, Soybean, Paddy, Sugarcane",
+            "rabi": "Wheat, Chickpea, Mustard, Barley"
+        },
+        "Silty Clay": {
+            "kharif": "Paddy, Pulses, Vegetables",
+            "rabi": "Wheat, Chickpea, Lentil, Radish"
+        },
+        "Sandy Clay": {
+            "kharif": "Cotton, Groundnut, Sesame",
+            "rabi": "Wheat, Chickpea, Barley, Mustard"
+        }
+    }
+    return crop_map.get(soil_type, {
+        "kharif": "Various crops can be cultivated",
+        "rabi": "Various crops can be cultivated"
+    })
+
+# ✅ Soil Management Tips
+def get_management_tips(soil_type: str):
+    tips_map = {
+        "Sandy": [
+            "Use organic manure (compost) generously",
+            "Adopt drip irrigation system",
+            "Include leguminous crops in crop rotation",
+            "Practice mulching to retain moisture"
+        ],
+        "Clay": [
+            "Allow soil to dry after plowing",
+            "Add organic matter (straw, compost)",
+            "Practice raised bed cultivation",
+            "Deep plowing for better aeration"
+        ],
+        "Loam": [
+            "Regular application of organic manure",
+            "Follow crop rotation practices",
+            "Use balanced fertilizers",
+            "Maintain soil fertility levels"
+        ],
+        "Silty": [
+            "Plant cover crops (like green gram)",
+            "Avoid over-irrigation",
+            "Increase use of organic materials",
+            "Cultivate on leveled land"
+        ]
+    }
+    
+    # Determine general soil category
+    if "Sandy" in soil_type:
+        return tips_map["Sandy"]
+    elif "Clay" in soil_type:
+        return tips_map["Clay"]
+    elif "Silt" in soil_type:
+        return tips_map["Silty"]
+    else:
+        return tips_map["Loam"]
 
 # ✅ Disease Detection
 @app.get("/detect-disease-ui", response_class=HTMLResponse)
@@ -339,105 +553,3 @@ async def get_weather(request: Request):
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
-# ✅ Crop Problem Detection (Form POST)
-@app.post("/detect_problem")
-async def detect_problem(request: Request, issue: str = Form(...)):
-    advice = {
-        "Yellowing leaves": (
-            "🧪 <strong>Cause:</strong> Most commonly due to nitrogen deficiency or poor nutrient absorption.<br>"
-            "<strong>Symptoms:</strong> Older leaves turn pale yellow while veins may remain green. Growth slows down.<br>"
-            "<strong>Solution:</strong> Apply nitrogen-rich fertilizers like urea or well-rotted compost. Ensure soil pH is between 6.0–7.0. "
-            "Use foliar sprays for faster results. Avoid overwatering, which can leach nutrients."
-        ),
-        "Wilting": (
-            "💧 <strong>Cause:</strong> Water imbalance — either underwatering, overwatering, or root damage from pathogens like Fusarium or Pythium.<br>"
-            "<strong>Symptoms:</strong> Leaves droop, especially during the day. In severe cases, plants collapse.<br>"
-            "<strong>Solution:</strong> Check soil moisture. Water only when the top 2–3 cm of soil feels dry. "
-            "If roots are rotting, remove affected plants and treat soil with fungicides. Improve drainage with sand or raised beds."
-        ),
-        "Spots on leaves": (
-            "🦠 <strong>Cause:</strong> Fungal (e.g. leaf spot, anthracnose) or bacterial infections due to high humidity and poor airflow.<br>"
-            "<strong>Symptoms:</strong> Brown, black, or yellow spots on leaf surface, often with halos or concentric rings.<br>"
-            "<strong>Solution:</strong> Remove infected leaves. Apply copper-based fungicides or neem oil weekly. "
-            "Water early in the morning to reduce leaf wetness. Avoid overcrowding and ensure good air circulation."
-        ),
-        "Stunted growth": (
-            "🌱 <strong>Cause:</strong> Nutrient deficiencies (phosphorus, potassium), pest infestations, or compacted soil.<br>"
-            "<strong>Symptoms:</strong> Plants remain small, with pale or discolored leaves and reduced yield.<br>"
-            "<strong>Solution:</strong> Use DAP or compost for phosphorus. Check root zone for nematodes or aphids. "
-            "Loosen soil before planting and rotate crops annually to improve soil health."
-        ),
-        "Pest infestation": (
-            "🐛 <strong>Cause:</strong> Attack by aphids, caterpillars, borers, or mites that feed on plant sap or tissue.<br>"
-            "<strong>Symptoms:</strong> Holes in leaves, sticky residue (honeydew), webbing, or visible insects.<br>"
-            "<strong>Solution:</strong> Use neem oil or organic insecticides every 7–10 days. "
-            "Introduce natural enemies like ladybugs or parasitic wasps. Remove weeds and infected debris regularly."
-        ),
-        "Leaf curling": (
-            "🔍 <strong>Cause:</strong> Viral diseases, aphids, or boron deficiency can cause distorted leaves.<br>"
-            "<strong>Symptoms:</strong> Leaves curl inward or twist, with discoloration or brittleness.<br>"
-            "<strong>Solution:</strong> Remove and destroy infected parts. Apply neem oil for insects. "
-            "Use virus-resistant seed varieties and maintain field hygiene. Add boron supplements if soil test confirms deficiency."
-        ),
-        "Root rot": (
-            "🚱 <strong>Cause:</strong> Caused by waterlogging and fungi like Rhizoctonia or Pythium.<br>"
-            "<strong>Symptoms:</strong> Yellowing leaves, mushy roots, foul smell from soil, and plant toppling.<br>"
-            "<strong>Solution:</strong> Improve drainage and avoid excess watering. Use Trichoderma or fungicide-treated seeds. "
-            "Grow crops on raised beds or ridges during monsoon."
-        ),
-        "Powdery mildew": (
-            "🍶 <strong>Cause:</strong> Fungal infection due to dry days and humid nights.<br>"
-            "<strong>Symptoms:</strong> White powdery coating on leaves, stems, or buds that spreads fast.<br>"
-            "<strong>Solution:</strong> Mix 1 tablespoon baking soda + 1 tsp liquid soap in 1 liter of water and spray weekly. "
-            "Alternatively, use sulfur-based fungicides. Remove infected leaves and ensure adequate spacing."
-        ),
-        "Fruit drop": (
-            "🌡️ <strong>Cause:</strong> Sudden temperature shifts, moisture stress, and over-fertilization with nitrogen.<br>"
-            "<strong>Symptoms:</strong> Immature fruits fall off before ripening. Flowers may also drop.<br>"
-            "<strong>Solution:</strong> Maintain consistent soil moisture. Mulch soil to prevent evaporation. "
-            "Avoid excess nitrogen during flowering. Use borax if boron deficiency is suspected."
-        ),
-        "Discoloration of stem": (
-            "🧫 <strong>Cause:</strong> Bacterial or fungal stem infections (like wilt or blight), or nutrient deficiencies.<br>"
-            "<strong>Symptoms:</strong> Brown or black streaks on stem, oozing sap, wilting above the infection point.<br>"
-            "<strong>Solution:</strong> Prune infected stems. Disinfect tools after use. "
-            "Apply Bordeaux mixture or systemic fungicides. Practice crop rotation and proper spacing."
-        ),
-        "Holes in leaves": (
-            "🐞 <strong>Cause:</strong> Insect feeding by beetles, loopers, caterpillars, or grasshoppers.<br>"
-            "<strong>Symptoms:</strong> Irregular holes or notches in leaves, especially near edges.<br>"
-            "<strong>Solution:</strong> Inspect plants early morning. Hand-pick pests. Spray neem, garlic-chili solution, or bio-pesticides. "
-            "Install pheromone or light traps to monitor and reduce pest numbers."
-        ),
-        "Cracked fruits": (
-            "🌧️ <strong>Cause:</strong> Irregular watering — especially sudden rainfall after dry spells.<br>"
-            "<strong>Symptoms:</strong> Visible cracks in ripening fruits (like tomatoes, pomegranates).<br>"
-            "<strong>Solution:</strong> Water plants evenly. Use mulch to retain consistent moisture. "
-            "Pick mature fruits early. Grow crack-resistant varieties when possible."
-        ),
-        "Flower drop": (
-            "🌬️ <strong>Cause:</strong> Environmental stress (heat, wind), nutrient imbalance, or pollination failure.<br>"
-            "<strong>Symptoms:</strong> Flowers fall off without forming fruits.<br>"
-            "<strong>Solution:</strong> Provide shade nets during extreme heat. Avoid overuse of nitrogen. "
-            "Encourage bees or pollinate manually by shaking flowers gently in morning hours."
-        ),
-        "Leaf burn": (
-            "🔥 <strong>Cause:</strong> Fertilizer burn or sun scorch.<br>"
-            "<strong>Symptoms:</strong> Brown or scorched edges on leaves, sometimes entire leaf dies off.<br>"
-            "<strong>Solution:</strong> Flush soil with clean water if over-fertilized. Move pots or use shade net to reduce sunlight. "
-            "Use slow-release fertilizers and avoid midday watering on leaves."
-        ),
-        "Mold on soil": (
-            "🌫️ <strong>Cause:</strong> Excessive humidity, poor air circulation, and overwatering.<br>"
-            "<strong>Symptoms:</strong> White or gray fuzzy growth on soil surface.<br>"
-            "<strong>Solution:</strong> Scrape off mold, reduce watering, and increase sunlight exposure. "
-            "Mix dry compost or cinnamon in topsoil. Ensure pots or beds have drainage holes."
-        )
-    }
-
-    tip = advice.get(issue, "📌 <strong>No specific advice found.</strong> Please consult a local expert or agricultural extension officer.")
-
-    return templates.TemplateResponse("problem.html", {
-        "request": request,
-        "tip": tip
-    })

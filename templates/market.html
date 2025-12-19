@@ -1,0 +1,425 @@
+{% extends 'base.html' %}
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- Theme Toggle Button -->
+<button id="themeToggle" class="fixed top-6 right-6 z-50 bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-full p-3 hover:scale-110 transition-all duration-300 shadow-lg">
+    <i id="themeIcon" class="fas fa-moon text-emerald-400 text-lg"></i>
+</button>
+
+<div class="min-h-screen bg-white dark:bg-slate-900 text-gray-900 dark:text-white transition-colors duration-500 p-4 md:p-8 font-sans">
+    
+    <!-- Animated Header with Live Ticker -->
+    <div class="max-w-6xl mx-auto mb-8">
+        <div class="text-center mb-6">
+            <h1 class="text-4xl md:text-5xl font-bold text-emerald-600 dark:text-emerald-400 mb-2 animate-pulse">
+                🌾 Farmer's Live Market Hub
+            </h1>
+            <p class="text-gray-600 dark:text-slate-400 text-lg">Direct Government Access • Zero Mediators • Live Prices</p>
+        </div>
+        
+        <!-- Live Market Ticker -->
+        <div class="relative overflow-hidden bg-gradient-to-r from-emerald-500/10 to-blue-500/10 dark:from-emerald-900/30 dark:to-blue-900/30 rounded-2xl p-4 border border-emerald-200/50 dark:border-emerald-500/30 mb-6">
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-3">
+                    <div class="h-3 w-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span class="font-semibold text-emerald-700 dark:text-emerald-400">LIVE MARKET PULSE</span>
+                    <span class="text-xs text-gray-500 dark:text-slate-500 px-2 py-1 bg-white/50 dark:bg-slate-800/50 rounded-full">
+                        <i class="fas fa-satellite-dish mr-1"></i> 16,000+ Mandis
+                    </span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-xs text-gray-500 dark:text-slate-500">
+                        <i class="fas fa-clock mr-1"></i>
+                        <span id="liveTime">--:--:--</span>
+                    </span>
+                    <button onclick="refreshData()" class="text-xs bg-emerald-500/20 dark:bg-emerald-500/30 hover:bg-emerald-500/40 px-3 py-1 rounded-full transition-all">
+                        <i class="fas fa-sync-alt mr-1"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-hidden">
+                <div id="marketTicker" class="flex space-x-8 animate-ticker">
+                    <!-- Ticker items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left Panel - Search Section -->
+        <div class="lg:col-span-1 space-y-6">
+            <div class="bg-white/80 dark:bg-slate-800/50 p-6 rounded-3xl border border-gray-200 dark:border-slate-700 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all duration-300">
+                <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-location-dot text-red-500 animate-bounce"></i> Find Local Prices
+                </h2>
+                
+                <form action="/market" method="POST" id="marketForm" class="space-y-4">
+                    <button type="button" onclick="simulateLocation()" 
+                        class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-emerald-500/30 active:scale-95 group">
+                        <span id="locIcon" class="relative flex h-4 w-4">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-4 w-4 bg-white"></span>
+                        </span>
+                        <span>Detect My Location</span>
+                        <i class="fas fa-chevron-right group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                    
+                    <div class="relative">
+                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <input type="text" name="district" id="districtInput" required
+                            class="w-full bg-white dark:bg-slate-900 border-2 border-gray-300 dark:border-slate-700 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-emerald-500 transition-all duration-300 placeholder-gray-400 dark:placeholder-slate-500"
+                            placeholder="Enter District (e.g. Saket)">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-gradient-to-r from-gray-700 to-gray-800 dark:from-slate-700 dark:to-slate-800 hover:from-gray-800 hover:to-gray-900 dark:hover:from-slate-600 dark:hover:to-slate-700 text-white py-4 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95">
+                        Search Mandi Rates
+                    </button>
+                </form>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="bg-white/80 dark:bg-slate-800/50 p-6 rounded-3xl border border-gray-200 dark:border-slate-700 backdrop-blur-md shadow-xl">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <i class="fas fa-chart-line text-blue-500"></i> Market Insights
+                </h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-900/20 dark:to-slate-800/50 rounded-xl">
+                        <span class="text-sm">Active Mandis</span>
+                        <span class="font-bold text-emerald-600 dark:text-emerald-400 animate-count" data-target="16843">0</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-white dark:from-blue-900/20 dark:to-slate-800/50 rounded-xl">
+                        <span class="text-sm">Daily Updates</span>
+                        <span class="font-bold text-blue-600 dark:text-blue-400 animate-count" data-target="2456">0</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gradient-to-r from-orange-50 to-white dark:from-orange-900/20 dark:to-slate-800/50 rounded-xl">
+                        <span class="text-sm">Farmers Online</span>
+                        <span class="font-bold text-orange-600 dark:text-orange-400 animate-count" data-target="89234">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Market Data -->
+        <div class="lg:col-span-2 space-y-6">
+            {% if prices %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="pricesGrid">
+                {% for item in prices %}
+                <div class="bg-white/90 dark:bg-slate-800/80 p-5 rounded-2xl border border-gray-200 dark:border-slate-700 hover:border-emerald-500/50 hover:shadow-2xl transition-all duration-500 shadow-lg group hover:scale-[1.02] animate-fadeIn" style="animation-delay: {{ loop.index0 * 0.1 }}s;">
+                    <!-- Price Change Indicator -->
+                    <div class="absolute -top-2 -right-2">
+    {% set change = item.change|default(5) %}
+    <div class="px-2 py-1 rounded-full text-xs font-bold {% if change > 0 %}bg-emerald-500/20 text-emerald-700 dark:text-emerald-300{% elif change < 0 %}bg-red-500/20 text-red-700 dark:text-red-300{% else %}bg-gray-500/20 text-gray-700 dark:text-gray-300{% endif %}">
+        {% if change > 0 %}+{% endif %}{{ change }}%
+    </div>
+</div>
+                    
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <h3 class="text-lg font-bold text-emerald-600 dark:text-emerald-400">{{ item.commodity }}</h3>
+                                <span class="text-xs px-2 py-1 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full text-emerald-700 dark:text-emerald-300">
+                                    {{ item.grade|default('Grade A') }}
+                                </span>
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-slate-400">
+                                <i class="fas fa-warehouse mr-1"></i>{{ item.market }}
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-black text-gray-900 dark:text-white animate-price-change">₹{{ item.modal_price }}</div>
+                            <p class="text-[10px] text-gray-500 dark:text-slate-500 uppercase tracking-widest">Per Quintal</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Price Range with Animation -->
+                    <div class="space-y-2 mt-4">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-red-500 dark:text-red-400">
+                                <i class="fas fa-arrow-down mr-1"></i>Min: ₹{{ item.min_price }}
+                            </span>
+                            <span class="text-emerald-500 dark:text-emerald-400">
+                                <i class="fas fa-arrow-up mr-1"></i>Max: ₹{{ item.max_price }}
+                            </span>
+                        </div>
+                        <div class="relative">
+                            <div class="w-full bg-gray-200 dark:bg-slate-900 h-3 rounded-full overflow-hidden">
+                                {% set range_width = ((item.modal_price - item.min_price) / (item.max_price - item.min_price)) * 100 %}
+                                <div class="bg-gradient-to-r from-emerald-400 to-emerald-500 h-full rounded-full animate-progress" style="width: {{ range_width|default(50) }}%"></div>
+                            </div>
+                            <div class="absolute top-1/2 transform -translate-y-1/2 h-4 w-4 bg-white dark:bg-slate-200 rounded-full shadow-lg border-2 border-emerald-500 animate-float" style="left: {{ range_width|default(50) }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Info -->
+                    <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-200/50 dark:border-slate-700/50">
+                        <div class="flex items-center gap-4 text-xs">
+                            <span class="text-gray-500 dark:text-slate-500">
+                                <i class="far fa-calendar mr-1"></i> Today
+                            </span>
+                            <span class="text-gray-500 dark:text-slate-500">
+                                <i class="fas fa-weight-hanging mr-1"></i> 100kg
+                            </span>
+                        </div>
+                        <button class="text-xs bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-3 py-1 rounded-full transition-all">
+                            <i class="fas fa-chart-bar mr-1"></i> Trend
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- Placeholder State -->
+            <div class="text-center py-20 bg-gradient-to-br from-white to-gray-50 dark:from-slate-800/30 dark:to-slate-900/30 rounded-3xl border-2 border-dashed border-gray-300 dark:border-slate-700 animate-pulse">
+                <div class="inline-block p-6 rounded-full bg-emerald-100 dark:bg-emerald-900/30 mb-6">
+                    <i class="fa-solid fa-store-slash text-4xl text-emerald-500 dark:text-emerald-400"></i>
+                </div>
+                <p class="text-gray-600 dark:text-slate-500 text-lg mb-2">Select a district to see live Mandi rates</p>
+                <p class="text-sm text-gray-400 dark:text-slate-600">Real-time prices from government-regulated markets</p>
+            </div>
+            {% endif %}
+
+            <!-- Government Support Section -->
+            <div class="bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-slate-900 p-8 rounded-3xl border border-emerald-200/50 dark:border-emerald-500/20 shadow-xl hover:shadow-2xl transition-all duration-500">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <i class="fa-solid fa-shield-halved text-emerald-500 dark:text-emerald-400 animate-pulse"></i> 
+                    Direct Government Support
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {% set schemes = [
+                        {"name": "PM-KISAN", "icon": "fa-money-bill-trend-up", "color": "blue", "desc": "Claim ₹6,000 yearly benefit directly."},
+                        {"name": "e-NAM", "icon": "fa-cart-shopping", "color": "emerald", "desc": "Sell your crops online. Bypass agents."},
+                        {"name": "Subsidies", "icon": "fa-tractor", "color": "orange", "desc": "50-80% off on Tractors & Tools."}
+                    ] %}
+                    {% for scheme in schemes %}
+                    <a href="#" target="_blank" 
+                       class="bg-white/80 dark:bg-slate-800 p-6 rounded-2xl hover:scale-105 transition-all duration-300 border border-gray-200 dark:border-slate-700 hover:shadow-xl group animate-fadeIn" 
+                       style="animation-delay: {{ loop.index * 0.2 }}s;">
+                        <div class="inline-block p-3 rounded-xl bg-{{ scheme.color }}-100 dark:bg-{{ scheme.color }}-900/30 mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid {{ scheme.icon }} text-2xl text-{{ scheme.color }}-500 dark:text-{{ scheme.color }}-400"></i>
+                        </div>
+                        <h4 class="font-bold mb-2 text-gray-900 dark:text-white">{{ scheme.name }}</h4>
+                        <p class="text-sm text-gray-600 dark:text-slate-400">{{ scheme.desc }}</p>
+                        <div class="mt-4 flex items-center text-xs text-{{ scheme.color }}-500 dark:text-{{ scheme.color }}-400">
+                            <span>Learn more</span>
+                            <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add custom animations -->
+<style>
+@keyframes ticker {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+@keyframes progress {
+    from { width: 0%; }
+    to { width: var(--target-width); }
+}
+@keyframes priceChange {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+.animate-ticker {
+    animation: ticker 30s linear infinite;
+}
+.animate-fadeIn {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+.animate-progress {
+    animation: progress 1.5s ease-out forwards;
+}
+.animate-price-change {
+    animation: priceChange 2s infinite;
+}
+</style>
+
+<script>
+// Theme Toggle
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+
+themeToggle.addEventListener('click', () => {
+    const html = document.documentElement;
+    if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        themeIcon.className = 'fas fa-sun text-yellow-500 text-lg';
+    } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        themeIcon.className = 'fas fa-moon text-emerald-400 text-lg';
+    }
+});
+
+// Initialize theme
+if (localStorage.getItem('theme') === 'dark' || 
+    (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+    themeIcon.className = 'fas fa-moon text-emerald-400 text-lg';
+} else {
+    themeIcon.className = 'fas fa-sun text-yellow-500 text-lg';
+}
+
+// Live Time Update
+function updateLiveTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-IN', { 
+        hour12: true, 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+    });
+    document.getElementById('liveTime').textContent = timeString;
+}
+setInterval(updateLiveTime, 1000);
+updateLiveTime();
+
+// Simulate Market Ticker
+const tickerItems = [
+    "🌾 Wheat up 2.3% in Punjab", 
+    "🚜 Rice stable across markets",
+    "📈 Tomato prices surge 15%", 
+    "💰 MSP announced for Kharif crops",
+    "🌱 Organic demand up 40%",
+    "🚚 Logistics improved in Bihar"
+];
+
+const ticker = document.getElementById('marketTicker');
+tickerItems.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'flex items-center gap-2 whitespace-nowrap';
+    div.innerHTML = `
+        <span class="text-emerald-600 dark:text-emerald-400 font-semibold">${item}</span>
+        <span class="h-1 w-1 rounded-full bg-gray-400"></span>
+    `;
+    ticker.appendChild(div);
+});
+
+// Animated Counter
+function animateCounters() {
+    const counters = document.querySelectorAll('.animate-count');
+    counters.forEach(counter => {
+        const target = parseInt(counter.dataset.target);
+        const increment = target / 100;
+        let current = 0;
+        
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            counter.textContent = Math.floor(current).toLocaleString();
+        }, 20);
+    });
+}
+
+// Simulate Location Detection
+function simulateLocation() {
+    const input = document.getElementById('districtInput');
+    const button = document.querySelector('button[onclick="simulateLocation()"]');
+    
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Detecting...';
+    button.disabled = true;
+    
+    setTimeout(() => {
+        const locations = ["Saket, Delhi", "Ludhiana, Punjab", "Nagpur, Maharashtra"];
+        const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+        input.value = randomLocation;
+        
+        button.innerHTML = `
+            <span id="locIcon" class="relative flex h-4 w-4">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-4 w-4 bg-white"></span>
+            </span>
+            <span>Location Found!</span>
+            <i class="fas fa-check ml-2"></i>
+        `;
+        button.classList.remove('from-emerald-500', 'to-emerald-600');
+        button.classList.add('from-green-500', 'to-green-600');
+        
+        setTimeout(() => {
+            document.getElementById('marketForm').submit();
+        }, 1000);
+    }, 1500);
+}
+
+// Refresh Data Simulation
+function refreshData() {
+    const refreshBtn = document.querySelector('button[onclick="refreshData()"]');
+    const originalText = refreshBtn.innerHTML;
+    
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Refreshing...';
+    refreshBtn.disabled = true;
+    
+    setTimeout(() => {
+        refreshBtn.innerHTML = originalText;
+        refreshBtn.disabled = false;
+        
+        // Simulate price updates
+        document.querySelectorAll('.animate-price-change').forEach(el => {
+            el.style.animation = 'none';
+            void el.offsetWidth; // Trigger reflow
+            el.style.animation = 'priceChange 2s infinite';
+        });
+    }, 1000);
+}
+
+// Initialize animations
+document.addEventListener('DOMContentLoaded', () => {
+    animateCounters();
+    
+    // Add hover effects to price cards
+    document.querySelectorAll('#pricesGrid > div').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            const price = card.querySelector('.animate-price-change');
+            price.style.animation = 'priceChange 0.5s ease-in-out';
+        });
+    });
+});
+
+// Simulate live price updates every 30 seconds
+setInterval(() => {
+    if (document.querySelector('#pricesGrid')) {
+        document.querySelectorAll('.animate-price-change').forEach(priceEl => {
+            const current = parseInt(priceEl.textContent.replace('₹', ''));
+            const change = Math.random() > 0.5 ? 1 : -1;
+            const amount = Math.floor(Math.random() * 50);
+            const newPrice = current + (change * amount);
+            
+            if (newPrice > 0) {
+                priceEl.textContent = `₹${newPrice}`;
+                priceEl.style.color = change > 0 ? '#10b981' : '#ef4444';
+                
+                setTimeout(() => {
+                    priceEl.style.color = '';
+                }, 1000);
+            }
+        });
+    }
+}, 30000);
+</script>
+{% endblock %}
